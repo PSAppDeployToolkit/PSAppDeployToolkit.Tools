@@ -1,0 +1,146 @@
+---
+id: Convert-ADTDeployment
+title: Convert-ADTDeployment
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Converts either a Deploy-Application.ps1 script, or a full application package to use the new folder structure and syntax required by PSAppDeployToolkit v4.
+
+## SYNTAX
+
+```powershell
+Convert-ADTDeployment [-Path] <String> [[-Destination] <String>] [-Force] [-PassThru] [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+The variables and main code blocks are updated to the new syntax via PSScriptAnalyzer, then transferred to a fresh Invoke-AppDeployToolkit.ps1 script.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Convert-ADTDeployment -Path .\Deploy-Application.ps1
+```
+
+This example converts Deploy-Application.ps1 into Invoke-AppDeployToolkit.ps1 in the same folder.
+
+### EXAMPLE 2
+
+```powershell
+Convert-ADTDeployment -Path .\PackageFolder
+```
+
+This example converts PackageFolder into PackageFolder_Converted in the same folder.
+
+### EXAMPLE 3
+
+```powershell
+$ConvertedPackages = Get-ChildItem -Directory | Convert-ADTDeployment -Destination C:\Temp\ConvertedPackages -Force -PassThru
+```
+
+Get all folders in the current directory and convert them to v4 packages in C:\Temp\ConvertedPackages, overwriting existing files and storing the new package info in $ConvertedPackages.
+
+## PARAMETERS
+
+### -Path
+
+Path to the Deploy-Application.ps1 file or folder to analyze.
+If a folder is specified, it must contain the Deploy-Application.ps1 script and the AppDeployToolkit folder.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: FullName
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -Destination
+
+Path to the output file or folder.
+If not specified it will default to creating either a Invoke-AppDeployToolkit.ps1 file or FolderName_Converted folder under the parent folder of the supplied Path value.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: (Split-Path -Path $Path -Parent)
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+
+Overwrite the output path if it already exists.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PassThru
+
+Pass the output file or folder to the pipeline.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### System.String
+
+### You can pipe script files or folders to this function.
+## OUTPUTS
+
+### System.IO.FileInfo / System.IO.DirectoryInfo
+
+### Returns the file or folder to the pipeline if -PassThru is specified.
+## NOTES
+An active ADT session is NOT required to use this function.
+Requires PSScriptAnalyzer module 1.23.0 or later.
+To install:
+
+Install-Module -Name PSScriptAnalyzer -Scope CurrentUser
+Install-Module -Name PSScriptAnalyzer -Scope AllUsers
+
+Tags: psadt
+Website: https://psappdeploytoolkit.com
+Copyright: (C) 2024 PSAppDeployToolkit Team (Sean Lillis, Dan Cunningham, Muhammad Mashwani, Mitch Richters, Dan Gough).
+License: https://opensource.org/license/lgpl-3-0
+
+## RELATED LINKS
+
+[https://psappdeploytoolkit.com](https://psappdeploytoolkit.com)
