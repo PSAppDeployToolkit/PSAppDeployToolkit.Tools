@@ -5,7 +5,7 @@
 # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-powershell
 # https://github.com/actions/upload-artifact#where-does-the-upload-go
-name: PSAppDeployToolkit-Windows-PowerShell
+name: PSAppDeployToolkit.Tools-Windows-PowerShell
 on:
   pull_request:
     paths-ignore:
@@ -57,7 +57,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Test and Build
       shell: powershell
-      run: Invoke-Build -File .\src\PSAppDeployToolkit.build.ps1
+      run: Invoke-Build -File .\src\PSAppDeployToolkit.Tools.build.ps1
     - name: Upload pester results
       uses: actions/upload-artifact@v4
       with:
@@ -75,21 +75,7 @@ jobs:
     - name: Upload module
       uses: actions/upload-artifact@v4
       with:
-        name: PSAppDeployToolkit
+        name: PSAppDeployToolkit.Tools
         path: .\src\Artifacts\Module
-        if-no-files-found: error
-        overwrite: true
-    - name: Upload v3 module template
-      uses: actions/upload-artifact@v4
-      with:
-        name: PSAppDeployToolkit_Template_v3
-        path: .\src\Artifacts\Template_v3
-        if-no-files-found: error
-        overwrite: true
-    - name: Upload v4 module template
-      uses: actions/upload-artifact@v4
-      with:
-        name: PSAppDeployToolkit_Template_v4
-        path: .\src\Artifacts\Template_v4
         if-no-files-found: error
         overwrite: true
