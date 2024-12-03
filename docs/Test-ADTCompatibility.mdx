@@ -1,0 +1,117 @@
+---
+id: Test-ADTCompatibility
+title: Test-ADTCompatibility
+hide_title: false
+hide_table_of_contents: false
+---
+
+## SYNOPSIS
+
+Tests a PSAppDeployToolkit deployment scripts such as Deploy-Application.ps1 or Invoke-AppDeployToolkit.ps1 for any deprecated v3.x command or variable usage.
+
+## SYNTAX
+
+```powershell
+Test-ADTCompatibility [-FilePath] <String> [[-Format] <String>] [<CommonParameters>]
+```
+
+## DESCRIPTION
+
+The Test-ADTCompatibility function run custom PSScriptAnalyzer rules against the input file and output any detected issues.
+The results can be output in a variety of formats.
+
+## EXAMPLES
+
+### EXAMPLE 1
+
+```powershell
+Test-ADTCompatibility -FilePath .\Deploy-Application.ps1
+```
+
+This example analyzes Deploy-Application.ps1 and outputs the results.
+
+### EXAMPLE 2
+
+```powershell
+Test-ADTCompatibility -FilePath .\Deploy-Application.ps1 -Format Table
+```
+
+This example analyzes Deploy-Application.ps1 and outputs the results as a table.
+
+### EXAMPLE 3
+
+```powershell
+Test-ADTCompatibility -FilePath .\Deploy-Application.ps1 -Format Grid
+```
+
+This example analyzes Deploy-Application.ps1 and outputs the results as a grid view.
+
+## PARAMETERS
+
+### -FilePath
+
+Path to the .ps1 file to analyze.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: FullName
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -Format
+
+Specifies the output format.
+The acceptable values for this parameter are: Raw, Table, Grid.
+The default value is Raw, which outputs the raw DiagnosticRecord objects from PSScriptAnalyzer.
+Table outputs just the line numbers and messages as a table.
+Grid outputs the line numbers and messages in a graphical window.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: Raw
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### System.String
+
+### You can pipe script files to this function.
+## OUTPUTS
+
+### Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord
+
+### Returns the standard output from Invoke-ScriptAnalyzer.
+## NOTES
+An active ADT session is NOT required to use this function.
+Requires PSScriptAnalyzer module 1.23.0 or later.
+To install:
+
+Install-Module -Name PSScriptAnalyzer -Scope CurrentUser
+Install-Module -Name PSScriptAnalyzer -Scope AllUsers
+
+Tags: psadt
+Website: https://psappdeploytoolkit.com
+Copyright: (C) 2024 PSAppDeployToolkit Team (Sean Lillis, Dan Cunningham, Muhammad Mashwani, Mitch Richters, Dan Gough).
+License: https://opensource.org/license/lgpl-3-0
+
+## RELATED LINKS
+
+[https://psappdeploytoolkit.com](https://psappdeploytoolkit.com)
