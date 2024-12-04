@@ -9,7 +9,7 @@
     RootModule = 'PSAppDeployToolkit.Tools.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.0.1'
+    ModuleVersion = '0.1.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -94,6 +94,9 @@
 
         PSData = @{
 
+            # Tag to indicate pre-release status
+            Prerelease = 'beta'
+
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags = 'psappdeploytoolkit', 'adt', 'psadt', 'appdeployment', 'appdeploytoolkit', 'appdeploy', 'deployment', 'toolkit'
 
@@ -107,7 +110,7 @@
             IconUri = 'https://raw.githubusercontent.com/PSAppDeployToolkit/PSAppDeployToolkit/refs/heads/main/src/PSAppDeployToolkit/Assets/AppIcon.png'
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'https://github.com/PSAppDeployToolkit/PSAppDeployToolkit.Tools/releases/latest'
+            ReleaseNotes = 'https://github.com/PSAppDeployToolkit/PSAppDeployToolkit.Tools/releases'
 
         } # End of PSData hashtable
 
