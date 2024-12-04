@@ -263,20 +263,20 @@ function Convert-ADTDeployment
                     $hashtableContent = $hashtableAst.Right.Extent.Text
 
                     # Update the appScriptDate value to the current date
-                    $hashtableContent = $hashtableContent -replace "appScriptDate\s*=\s*'[^']+'", "appScriptDate = '$(Get-Date -Format "yyyy-MM-dd")'"
+                    $hashtableContent = $hashtableContent -replace "(?m)(^\s*appScriptDate\s*=)\s*'[^']+'", "`$1 '$(Get-Date -Format "yyyy-MM-dd")'"
 
                     # Copy each variable value from the input script to the hashtable
                     foreach ($variableReplacement in $variableReplacements)
                     {
                         $assignmentAst = $inputScriptAst.Find({
                                 param ($ast)
-                                $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $ast.Left.Extent.Text -match "^\[[^\]]+\]?\`$$variableReplacement$"
+                                $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $ast.Left.Extent.Text -match "^(\[[^\]]+\])?\`$(adtSession\.)?$variableReplacement$"
                             }, $true)
 
                         if ($assignmentAst)
                         {
                             $variableValue = $assignmentAst.Right.Extent.Text
-                            $hashtableContent = $hashtableContent -replace "$variableReplacement\s*=\s*'[^']*'", "$variableReplacement = $variableValue"
+                            $hashtableContent = $hashtableContent -replace "(?m)(^\s*$variableReplacement\s*=)\s*'[^']*'", "`$1 $variableValue"
                         }
                     }
 
