@@ -60,6 +60,11 @@ foreach ($module in $modulesToInstall) {
             # this only affects windows builds
             Install-Module @installSplat -SkipPublisherCheck
         }
+        elseif ($module.ModuleName -eq 'PSAppDeployToolkit' ) {
+            # special case for Pester certificate mismatch with older Pester versions - https://github.com/pester/Pester/issues/2389
+            # this only affects windows builds
+            Install-Module @installSplat -AllowPreRelease
+        }
         else {
             Install-Module @installSplat
         }
