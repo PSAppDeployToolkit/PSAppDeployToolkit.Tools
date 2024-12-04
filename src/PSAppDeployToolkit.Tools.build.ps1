@@ -507,23 +507,23 @@ Add-BuildTask Build {
         Write-Build Gray '        ...Docs output completed.'
     }
 
-    # Sign our files if we're running on main.
-    # if (($canSign = ($env:GITHUB_ACTIONS -eq 'true') -and ($env:GITHUB_REF_NAME -match '^(main|develop)$')))
-    # {
-    #     if (!(Get-Command -Name 'azuresigntool' -ErrorAction Ignore))
-    #     {
-    #         throw 'AzureSignTool not found.'
-    #     }
-    #     Write-Build Gray '        Signing module...'
-    #     Get-ChildItem -Path $Script:BuildModuleRoot -Include '*.ps*1' -Recurse | ForEach-Object {
-    #         & azuresigntool sign -s -kvu https://psadt-kv-prod-codesign.vault.azure.net -kvc PSADT -kvm -tr http://timestamp.digicert.com -td sha256 "$_"
-    #         if ($LASTEXITCODE -ne 0) { throw "Failed to sign file `"$_`". Exit code: $LASTEXITCODE" }
-    #     }
-    # }
-    # else
-    # {
-    #     Write-Build Yellow '        Not running main or develop branch in GitHub Actions, skipping code signing...'
-    # }
+    # Sign our files if we're running on main or develop.
+    if (($canSign = ($env:GITHUB_ACTIONS -eq 'true') -and ($env:GITHUB_REF_NAME -match '^(main|develop)$')))
+    {
+        if (!(Get-Command -Name 'azuresigntool' -ErrorAction Ignore))
+        {
+            throw 'AzureSignTool not found.'
+        }
+        Write-Build Gray '        Signing module...'
+        Get-ChildItem -Path $Script:BuildModuleRoot -Include '*.ps*1' -Recurse | ForEach-Object {
+            & azuresigntool sign -s -kvu https://psadt-kv-prod-codesign.vault.azure.net -kvc PSADT -kvm -tr http://timestamp.digicert.com -td sha256 "$_"
+            if ($LASTEXITCODE -ne 0) { throw "Failed to sign file `"$_`". Exit code: $LASTEXITCODE" }
+        }
+    }
+    else
+    {
+        Write-Build Yellow '        Not running main or develop branch in GitHub Actions, skipping code signing...'
+    }
 
     Write-Build Green '      ...Build Complete!'
 }
