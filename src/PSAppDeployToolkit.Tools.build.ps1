@@ -409,7 +409,7 @@ Add-BuildTask Build {
 
     # Compile the project into a singular psm1 file.
     Write-Build Gray '        Merging Public and Private functions to one module file...'
-    $scriptContent = foreach ($file in (Get-ChildItem -Path $Script:BuildModuleRoot\ImportsFirst.ps1, $Script:BuildModuleRoot\Private\*.ps1, $Script:BuildModuleRoot\Public\*.ps1, $Script:BuildModuleRoot\ImportsLast.ps1 -Recurse))
+    $scriptContent = foreach ($file in (Get-ChildItem -Path $Script:BuildModuleRoot\ImportsFirst.ps1, $Script:BuildModuleRoot\Private\*.ps1, $Script:BuildModuleRoot\Public\*.ps1, $Script:BuildModuleRoot\ImportsLast.ps1 -Recurse -ErrorAction Ignore))
     {
         # Import the script file as a string for substring replacement.
         $text = [System.IO.File]::ReadAllText($file.FullName).Trim()
@@ -508,7 +508,7 @@ Add-BuildTask Build {
     }
 
     # Sign our files if we're running on main or develop.
-    if (($canSign = ($env:GITHUB_ACTIONS -eq 'true') -and ($env:GITHUB_REF_NAME -match '^(main|develop)$')))
+    if ($env:GITHUB_ACTIONS -eq 'true' -and $env:GITHUB_REF_NAME -match '^(main|develop)$')
     {
         if (!(Get-Command -Name 'azuresigntool' -ErrorAction Ignore))
         {
