@@ -11,7 +11,7 @@ $modulesToInstall = New-Object System.Collections.Generic.List[object]
 # https://github.com/PSAppDeployToolkit/PSAppDeployToolkit
 [void]$modulesToInstall.Add(([PSCustomObject]@{
             ModuleName = 'PSAppDeployToolkit'
-            ModuleVersion = '4.0.1'
+            ModuleVersion = '4.0.2'
         }))
 # https://github.com/pester/Pester
 [void]$modulesToInstall.Add(([PSCustomObject]@{
