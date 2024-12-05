@@ -12,7 +12,8 @@ Converts either a Deploy-Application.ps1 script, or a full application package t
 ## SYNTAX
 
 ```powershell
-Convert-ADTDeployment [-Path] <String> [[-Destination] <String>] [-Force] [-PassThru] [<CommonParameters>]
+Convert-ADTDeployment [-Path] <String> [[-Destination] <String>] [-Show] [-Force] [-PassThru]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -77,6 +78,22 @@ Aliases:
 Required: False
 Position: 2
 Default value: (Split-Path -Path $Path -Parent)
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Show
+
+Opens the newly created output in Windows Explorer.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
