@@ -723,11 +723,12 @@ function Measure-ADTCompatibility
             'Execute-MSI' = @{
                 'NewFunction' = 'Start-ADTMsiProcess'
                 'TransformParameters' = @{
-                    'Path' = { "-FilePath $_" }
+                    'Path' = { if ($_ -match '^[''"]?\{?([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}?[''"]?$') { "-ProductCode $_" } else { "-FilePath $_" } }
                     'Arguments' = { "-ArgumentList $_" }
                     'Parameters' = { "-ArgumentList $_" }
                     'AddParameters' = { "-AdditionalArgumentList $_" }
                     'SecureParameters' = '-SecureArgumentList' # Should inspect switch values here in case of -Switch:$false
+                    'Transform' = { "-Transforms $(if ($_ -match "^'") { $_ -replace ';', "','" } elseif ($_ -match '^"') { $_ -replace ';', '","' } else { $_ })" }
                     'LogName' = { "-LogFileName $_" }
                     'IgnoreExitCodes' = { "-IgnoreExitCodes $($_.Trim('"').Trim("'") -split ',' -join ',')" }
                     'ExitOnProcessFailure' = {
