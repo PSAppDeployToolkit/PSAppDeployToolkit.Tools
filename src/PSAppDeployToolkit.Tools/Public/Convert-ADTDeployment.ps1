@@ -18,6 +18,9 @@ function Convert-ADTDeployment
     .PARAMETER Destination
         Path to the output file or folder. If not specified it will default to creating either a Invoke-AppDeployToolkit.ps1 file or FolderName_Converted folder under the parent folder of the supplied Path value.
 
+    .PARAMETER Show
+        Opens the newly created output in Windows Explorer.
+
     .PARAMETER Force
         Overwrite the output path if it already exists.
 
@@ -91,7 +94,11 @@ function Convert-ADTDeployment
         [System.String]$Path,
 
         [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
         [string]$Destination = (Split-Path -Path $Path -Parent),
+
+        [Parameter(Mandatory = $false)]
+        [System.Management.Automation.SwitchParameter]$Show,
 
         [Parameter(Mandatory = $false)]
         [System.Management.Automation.SwitchParameter]$Force,
@@ -123,7 +130,7 @@ function Convert-ADTDeployment
         $variableReplacements = @('appVendor', 'appName', 'appVersion', 'appArch', 'appLang', 'appRevision', 'appScriptVersion', 'appScriptAuthor', 'installName', 'installTitle')
 
         $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
-        $templateScriptPath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'Frontend\v4\Invoke-AppDeployToolkit.ps1')
+        $templateScriptPath = [System.IO.Path]::Combine((Get-Module PSAppDeployToolkit).ModuleBase, 'Frontend\v4\Invoke-AppDeployToolkit.ps1')
     }
 
     process
@@ -133,14 +140,15 @@ function Convert-ADTDeployment
             try
             {
                 $tempFolderName = "Convert-ADTDeployment_$([System.IO.Path]::GetRandomFileName().Replace('.', ''))"
-                $tempPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), $tempFolderName)
+                $tempFolderPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), $tempFolderName)
 
-                if ([System.IO.File]::Exists($Path))
+                if ($Path -like '*.ps1')
                 {
-                    Write-Verbose -Message "Input path is a file: $Path"
+                    Write-Verbose -Message "Input path is a .ps1 file: [$Path]"
 
                     # Update destination path with a specific filename if current value does not end in .ps1
                     $Destination = if ($Destination -like '*.ps1') { $Destination } else { [System.IO.Path]::Combine($Destination, 'Invoke-AppDeployToolkit.ps1') }
+                    Write-Verbose -Message "Destination path: [$Destination]"
 
                     # Halt if the destination file already exists and -Force is not specified
                     if (!$Force -and [System.IO.File]::Exists($Destination))
@@ -155,28 +163,49 @@ function Convert-ADTDeployment
                         Write-Error -ErrorRecord (New-ADTErrorRecord @naerParams)
                     }
 
-                    if ($Path -notmatch '(Deploy-Application\.ps1|Invoke-AppDeployToolkit\.ps1)$')
+                    if ($Path -notmatch '(?<=^|\\)(Deploy-Application\.ps1|Invoke-AppDeployToolkit\.ps1)$')
                     {
                         Write-Warning -Message "This function is designed to convert PSAppDeployToolkit deployment scripts such as Deploy-Application.ps1 or Invoke-AppDeployToolkit.ps1."
                     }
 
                     # Create the temp folder
-                    New-Item -Path $tempPath -ItemType Directory -Force | Out-Null
-                    # Create a temp copy of the script to run ScriptAnalyzer fixes on - prefix filename with _ in case it's named Invoke-AppDeployToolkit.ps1
-                    $inputScriptPath = [System.IO.Path]::Combine(([System.IO.Path]::GetDirectoryName($fullPath)), "_$([System.IO.Path]::GetFileName($fullPath))")
-                    Copy-Item -LiteralPath $Path -Destination $inputScriptPath -Force -PassThru
+                    Write-Verbose -Message "Creating temp folder [$tempFolderPath]"
+                    New-Item -Path $tempFolderPath -ItemType Directory -Force | Out-Null
+
+                    # Create a temp copy of the script to run ScriptAnalyzer fixes on - prefix filename with _ if it's named Invoke-AppDeployToolkit.ps1
+                    $inputScriptPath = if ($Path -match '(?<=^|\\)Invoke-AppDeployToolkit.ps1$')
+                    {
+                        [System.IO.Path]::Combine(([System.IO.Path]::GetDirectoryName($Path)), "_$([System.IO.Path]::GetFileName($Path))")
+                    }
+                    else
+                    {
+                        $Path
+                    }
+
+                    Write-Verbose -Message "Creating copy of [$Path] as [$inputScriptPath]"
+                    Copy-Item -LiteralPath $Path -Destination $inputScriptPath -Force
+
                     # Copy over our template v4 script
-                    $tempScriptPath = (Copy-Item -LiteralPath $templateScriptPath -Destination $tempPath -Force -PassThru).FullName
+                    Write-Verbose -Message "Copying template script to [$tempFolderPath\Invoke-AppDeployToolkit.ps1]"
+                    $outputScriptPath = (Copy-Item -LiteralPath $templateScriptPath -Destination $tempFolderPath -Force -PassThru).FullName
                 }
-                elseif ([System.IO.Directory]::Exists($Path))
+                else
                 {
-                    Write-Verbose -Message "Input path is a folder: $Path"
+                    Write-Verbose -Message "Input path is a folder: [$Path]"
 
                     # Re-use the same folder name with _Converted suffix for the new folder
                     $folderName = "$(Split-Path -Path $Path -Leaf)_Converted"
 
-                    # Update destination path to append this new folder name
-                    $Destination = [System.IO.Path]::Combine($Destination, $folderName)
+                    # Update destination path to append this new folder name. If Destination is empty, it would mean that Path was something like C:\ with no parent, so just append the folder name to Path instead.
+                    $Destination = if ([string]::IsNullOrEmpty($Destination))
+                    {
+                        [System.IO.Path]::Combine($Path, $folderName)
+                    }
+                    else
+                    {
+                        [System.IO.Path]::Combine($Destination, $folderName)
+                    }
+                    Write-Verbose -Message "Destination path: [$Destination]"
 
                     # Halt if the destination folder already exists and is not empty and -Force is not specified
                     if (!$Force -and [System.IO.Directory]::Exists($Destination) -and ([System.IO.Directory]::GetFiles($Destination) -or [System.IO.Directory]::GetDirectories($Destination)))
@@ -191,17 +220,18 @@ function Convert-ADTDeployment
                         Write-Error -ErrorRecord (New-ADTErrorRecord @naerParams)
                     }
 
-                    # Use New-ADTTemplate to generate our temp folder
+                    Write-Verbose -Message "Creating ADT Template in [$tempFolderPath]"
                     New-ADTTemplate -Destination ([System.IO.Path]::GetTempPath()) -Name $tempFolderName
 
-                    # Create a temp copy of Deploy-Application.ps1 to run ScriptAnalyzer fixes on
-                    $inputScriptPath = (Copy-Item -LiteralPath ([System.IO.Path]::Combine($Path, 'Deploy-Application.ps1')) -Destination $tempPath -Force -PassThru).FullName
+                    Write-Verbose -Message "Creating copy of [$Path\Deploy-Application.ps1] as [$tempFolderPath\Deploy-Application.ps1]"
+                    $inputScriptPath = (Copy-Item -LiteralPath ([System.IO.Path]::Combine($Path, 'Deploy-Application.ps1')) -Destination $tempFolderPath -Force -PassThru).FullName
 
                     # Set the path of our v4 template script
-                    $tempScriptPath = [System.IO.Path]::Combine($tempPath, 'Invoke-AppDeployToolkit.ps1')
+                    $outputScriptPath = [System.IO.Path]::Combine($tempFolderPath, 'Invoke-AppDeployToolkit.ps1')
                 }
 
                 # First run the fixes on the input script to update function names and variables
+                Write-Verbose -Message "Running ScriptAnalyzer fixes on [$inputScriptPath]"
                 Invoke-ScriptAnalyzer -Path $inputScriptPath -CustomRulePath $customRulePath -Fix | Out-Null
 
                 # Parse the input script and find the if statement that contains the deployment code
@@ -225,8 +255,10 @@ function Convert-ADTDeployment
 
                     if ($ifClause)
                     {
+                        Write-Verbose -Message "Found statement: if ($($ifClause.Item1.Extent.Text))"
+
                         # Re-read and parse the v4 template script after each replacement so that the offsets will still be valid
-                        $tempScriptContent = Get-Content -Path $tempScriptPath -Raw
+                        $tempScriptContent = Get-Content -Path $outputScriptPath -Raw
                         $tempScriptAst = [System.Management.Automation.Language.Parser]::ParseInput($tempScriptContent, [ref]$null, [ref]$null)
 
                         # Find the function definition in the v4 template script to fill in
@@ -237,18 +269,24 @@ function Convert-ADTDeployment
 
                         if ($functionAst)
                         {
+                            Write-Verbose -Message "Updating function [$($scriptReplacement.v4FunctionName)]"
+
                             # Update the content of the v4 template script
                             $start = $functionAst.Body.Extent.StartOffset
                             $end = $functionAst.Body.Extent.EndOffset
                             $scriptContent = $tempScriptAst.Extent.Text
                             $newScriptContent = ($scriptContent.Substring(0, $start) + $ifClause.Item2.Extent.Text + $scriptContent.Substring($end)).Trim()
-                            Set-Content -Path $tempScriptPath -Value $newScriptContent -Encoding UTF8
+                            Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
                         }
+                    }
+                    else
+                    {
+                        Write-Warning -Message "The if statement for [$($scriptReplacement.v4FunctionName)] was not found in the input script."
                     }
                 }
 
                 # Re-read and parse the script one more time
-                $tempScriptContent = Get-Content -Path $tempScriptPath -Raw
+                $tempScriptContent = Get-Content -Path $outputScriptPath -Raw
                 $tempScriptAst = [System.Management.Automation.Language.Parser]::ParseInput($tempScriptContent, [ref]$null, [ref]$null)
 
                 # Find the hashtable in the v4 template script that holds the adtSession splat
@@ -259,11 +297,10 @@ function Convert-ADTDeployment
 
                 if ($hashtableAst)
                 {
+                    Write-Verbose -Message 'Processing $adtSession hashtable'
+
                     # Get the text form of the hashtable definition
                     $hashtableContent = $hashtableAst.Right.Extent.Text
-
-                    # Update the appScriptDate value to the current date
-                    $hashtableContent = $hashtableContent -replace "(?m)(^\s*appScriptDate\s*=)\s*'[^']+'", "`$1 '$(Get-Date -Format "yyyy-MM-dd")'"
 
                     # Copy each variable value from the input script to the hashtable
                     foreach ($variableReplacement in $variableReplacements)
@@ -275,26 +312,41 @@ function Convert-ADTDeployment
 
                         if ($assignmentAst)
                         {
+                            Write-Verbose -Message "Updating variable [$variableReplacement]"
                             $variableValue = $assignmentAst.Right.Extent.Text
                             $hashtableContent = $hashtableContent -replace "(?m)(^\s*$variableReplacement\s*=)\s*'[^']*'", "`$1 $variableValue"
                         }
                     }
+
+                    Write-Verbose -Message 'Updating variable [appScriptDate]'
+                    $hashtableContent = $hashtableContent -replace "(?m)(^\s*appScriptDate\s*=)\s*'[^']+'", "`$1 '$(Get-Date -Format "yyyy-MM-dd")'"
 
                     # Update the content of the v4 template script
                     $start = $hashtableAst.Right.Extent.StartOffset
                     $end = $hashtableAst.Right.Extent.EndOffset
                     $scriptContent = $tempScriptAst.Extent.Text
                     $newScriptContent = ($scriptContent.Substring(0, $start) + $hashtableContent + $scriptContent.Substring($end)).Trim()
-                    Set-Content -Path $tempScriptPath -Value $newScriptContent -Encoding UTF8
+                    Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
+                }
+                else
+                {
+                    Write-Warning -Message 'Could not find [$adtSession] hashtable'
                 }
 
-                # Delete the temporary copy of the v3 script used for processing
+                Write-Verbose -Message "Removing temp script [$inputScriptPath]"
                 Remove-Item -LiteralPath $inputScriptPath -Force
 
                 if ($Path -like '*.ps1')
                 {
-                    # Move the updated script to the destination
-                    Move-Item -LiteralPath $tempScriptPath -Destination $Destination -Force -PassThru:$PassThru
+                    Write-Verbose -Message "Moving file [$outputScriptPath] to [$Destination]"
+                    Move-Item -LiteralPath $outputScriptPath -Destination $Destination -Force -PassThru:$PassThru
+
+                    # Display the newly created file in Windows Explorer (/select highlights the file in the folder).
+                    if ($Show)
+                    {
+                        Write-Verbose -Message "Selecting [$Destination] in Windows Explorer"
+                        & ([System.IO.Path]::Combine([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Windows), 'explorer.exe')) /select, $Destination
+                    }
                 }
                 else
                 {
@@ -304,14 +356,16 @@ function Convert-ADTDeployment
                         $subFolderPath = [System.IO.Path]::Combine($Path, $subFolder)
                         if ([System.IO.Directory]::Exists($subFolderPath))
                         {
-                            Copy-Item -LiteralPath $subFolderPath -Destination $tempPath -Recurse -Force
+                            Write-Verbose -Message "Copying $subFolder content"
+                            Copy-Item -LiteralPath $subFolderPath -Destination $tempFolderPath -Recurse -Force
                         }
                     }
 
-                    # Remove the Destination if it already exists (Force checks were done earlier)
+                    # Remove the Destination if it already exists (we should have already exited by this point if folder exists and Force not specified)
                     if (Test-Path -LiteralPath $Destination)
                     {
-                        Remove-Item -LiteralPath $Destination -Recurse -Force -ErrorAction SilentlyContinue
+                        Write-Verbose -Message "Removing existing destination folder [$Destination]"
+                        Remove-Item -LiteralPath $Destination -Recurse -Force -ErrorAction SilentlyContinue -WhatIf
                     }
 
                     # Sometimes previous actions were leaving a lock on the temp folder, so set up a retry loop
@@ -319,19 +373,27 @@ function Convert-ADTDeployment
                     {
                         try
                         {
-                            Move-Item -Path $tempPath -Destination $Destination -Force -PassThru:$PassThru
+                            Write-Verbose -Message "Moving folder [$tempFolderPath] to [$Destination]"
+                            Move-Item -Path $tempFolderPath -Destination $Destination -Force -PassThru:$PassThru
                             Write-Information -MessageData "Conversion successful: $Destination"
                             break
                         }
                         catch
                         {
-                            Write-Verbose -Message "Failed to move [$tempPath] to [$Destination]. Trying again in 500ms."
+                            Write-Verbose -Message "Failed to move folder. Trying again in 500ms."
                             [System.Threading.Thread]::Sleep(500)
                             if ($i -eq 4)
                             {
                                 throw
                             }
                         }
+                    }
+
+                    # Display the newly created folder in Windows Explorer.
+                    if ($Show)
+                    {
+                        Write-Verbose -Message "Opening [$Destination] in Windows Explorer"
+                        & ([System.IO.Path]::Combine([System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Windows), 'explorer.exe')) $Destination
                     }
 
                 }
@@ -343,10 +405,10 @@ function Convert-ADTDeployment
             }
             finally
             {
-                if (Test-Path -LiteralPath $tempPath)
+                if (Test-Path -LiteralPath $tempFolderPath)
                 {
-                    Write-Verbose -Message "Removing temp path [$tempPath]"
-                    Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
+                    Write-Verbose -Message "Removing temp folder [$tempFolderPath]"
+                    Remove-Item -Path $tempFolderPath -Recurse -Force -ErrorAction SilentlyContinue
                 }
             }
         }
