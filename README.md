@@ -6,13 +6,36 @@ PSAppDeployToolkit.Tools is a companion module for [PSAppDeployToolkit](https://
 
 ### Features
 
-- Test your PSAppDeployToolkit v3 scripts to get a full report on which functions and variables have changed in v4.
-- Convert a PSAppDeployToolkit v3 script or an entire package folder to v4 standards.
+- **Test-ADTCompatibility** - Test your PSAppDeployToolkit v3 scripts to get a full report on which functions and variables have changed in v4.
+- **Convert-ADTDeployment** - Convert a PSAppDeployToolkit v3 script or an entire package folder to v4 standards.
 
 ## Getting Started
 
--> [System Requirements](https://psappdeploytoolkit.com/docs/getting-started/requirements)
--> [Downloading](https://psappdeploytoolkit.com/docs/getting-started/download)
+Install the module from the PowerShell Gallery:
+
+```powershell
+Install-Module PSAppDeployToolkit.Tools -Scope CurrentUser
+```
+
+Example command usage:
+
+```powershell
+Test-ADTCompatibility -FilePath .\Deploy-Application.ps1 -Format Grid
+```
+
+This example analyzes Deploy-Application.ps1 and outputs the results as a grid view.
+
+```powershell
+Convert-ADTDeployment -Path .\Deploy-Application.ps1
+```
+
+This example converts Deploy-Application.ps1 into Invoke-AppDeployToolkit.ps1 in the same folder.
+
+```powershell
+Convert-ADTDeployment -Path .\PackageFolder
+```
+
+This example converts PackageFolder into PackageFolder_Converted in the same folder.
 
 ### PSAppDeployToolkit Links
 
