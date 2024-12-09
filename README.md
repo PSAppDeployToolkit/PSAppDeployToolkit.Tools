@@ -1,6 +1,6 @@
-# ![AppDeployToolkitLogo](https://github.com/user-attachments/assets/7766bcb3-fa87-496e-9b19-7a8e194dcd97)
+# ![PSAppDeployToolkit.Tools](https://github.com/user-attachments/assets/a275b3f9-6a45-42f0-a377-a57036d3f84d)
 
-## Enterprise App Packaging, Simplified.
+## Enterprise App Packaging, Extended.
 
 PSAppDeployToolkit.Tools is a companion module for [PSAppDeployToolkit](https://github.com/PSAppDeployToolkit/PSAppDeployToolkit) that provides tools and functions useful during the application packaging process. Having this separate allows for a separate release schedule and also reduces the file size of the module that is required to be delivered to endpoints to handle software deployments.
 
