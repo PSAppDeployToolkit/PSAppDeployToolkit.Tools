@@ -14,7 +14,13 @@ PSAppDeployToolkit.Tools is a companion module for [PSAppDeployToolkit](https://
 Install the module from the PowerShell Gallery:
 
 ```powershell
-Install-Module PSAppDeployToolkit.Tools -Scope CurrentUser
+Install-Module PSAppDeployToolkit.Tools -Scope CurrentUser -AllowPreRelease
+```
+
+Or import a downloaded copy of the module:
+
+```powershell
+Import-Module "<Path To PSAppDeployToolkit.Tools.psd1>"
 ```
 
 Example command usage:
