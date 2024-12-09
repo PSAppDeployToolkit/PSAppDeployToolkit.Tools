@@ -27,7 +27,7 @@
     Copyright = 'Copyright © 2024 PSAppDeployToolkit Team. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description = 'Enterprise App Packaging, Simplified.'
+    Description = 'Enterprise App Packaging, Extended.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.1.14393.0'
