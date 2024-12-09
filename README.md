@@ -17,7 +17,13 @@ Install the module from the PowerShell Gallery:
 Install-Module PSAppDeployToolkit.Tools -Scope CurrentUser -AllowPreRelease
 ```
 
-Or import a downloaded copy of the module:
+If this produces an error that the `-AllowPreRelease` parameter is not recognised, then first update PowerShellGet and then restart your PowerShell console:
+
+```powershell
+Install-Module PowerShellGet -Force -Scope CurrentUser
+```
+
+Alternatively you can import a downloaded copy of the module - however with this approach, you will need to ensure its pre-requisite modules **PSAppDeployToolkit** and **PSScriptAnalyzer** are available:
 
 ```powershell
 Import-Module "<Path To PSAppDeployToolkit.Tools.psd1>"
