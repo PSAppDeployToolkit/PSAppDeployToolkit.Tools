@@ -1,7 +1,7 @@
 ﻿#
 # Module manifest for module 'PSAppDeployToolkit.Tools'
 #
-# Generated on: 2024-12-03
+# Last modified: 2024-12-16
 #
 
 @{
@@ -9,7 +9,7 @@
     RootModule = 'PSAppDeployToolkit.Tools.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.2.0'
+    ModuleVersion = '0.2.1'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -49,7 +49,7 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules = @(
-        @{ModuleName = 'PSAppDeployToolkit'; GUID = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.0.2'; }
+        @{ModuleName = 'PSAppDeployToolkit'; GUID = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.0.3'; }
         @{ModuleName = 'PSScriptAnalyzer'; GUID = 'd6245802-193d-4068-a631-8863a4342a18'; ModuleVersion = '1.23.0'; }
     )
 
