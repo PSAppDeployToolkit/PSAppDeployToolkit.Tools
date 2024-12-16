@@ -175,11 +175,11 @@ function Convert-ADTDeployment
                     # Create a temp copy of the script to run ScriptAnalyzer fixes on - prefix filename with _ if it's named Invoke-AppDeployToolkit.ps1
                     $inputScriptPath = if ($Path -match '(?<=^|\\)Invoke-AppDeployToolkit.ps1$')
                     {
-                        [System.IO.Path]::Combine(([System.IO.Path]::GetDirectoryName($Path)), "_$([System.IO.Path]::GetFileName($Path))")
+                        [System.IO.Path]::Combine($tempFolderPath, "_$([System.IO.Path]::GetFileName($Path))")
                     }
                     else
                     {
-                        $Path
+                        [System.IO.Path]::Combine($tempFolderPath, [System.IO.Path]::GetFileName($Path))
                     }
 
                     Write-Verbose -Message "Creating copy of [$Path] as [$inputScriptPath]"
