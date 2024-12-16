@@ -40,7 +40,7 @@ function Measure-ADTCompatibility
             currentDate = '$adtSession.CurrentDate'
             currentDateTime = '$adtSession.CurrentDateTime'
             defaultMsiFile = '$adtSession.DefaultMsiFile'
-            deployAppScriptDate = '$adtSession.DeployAppScriptDate'
+            deployAppScriptDate = $null
             deployAppScriptFriendlyName = '$adtSession.DeployAppScriptFriendlyName'
             deployAppScriptParameters = '$adtSession.DeployAppScriptParameters'
             deployAppScriptVersion = '$adtSession.DeployAppScriptVersion'
