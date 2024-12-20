@@ -2731,6 +2731,11 @@ function Measure-ADTCompatibility
                                 # This is a splatted parameter, e.g. @params, retain the original value
                                 $NewParam = $boundParameter.Value.Value.Extent.Text
                             }
+                            elseif ($boundParameter.Key -match '^\d+$')
+                            {
+                                # This is an unrecognized positional parameter, pass through  as-is
+                                $newParam = $boundParameter.Value.Value.Extent.Text
+                            }
                             else
                             {
                                 # This is a regular parameter, e.g. -Path 'xxx'
