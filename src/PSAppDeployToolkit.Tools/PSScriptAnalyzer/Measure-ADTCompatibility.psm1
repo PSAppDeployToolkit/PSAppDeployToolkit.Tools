@@ -26,225 +26,1421 @@ function Measure-ADTCompatibility
 
     Begin
     {
-        $variableMappings = @{
-            AllowRebootPassThru = '$adtSession.AllowRebootPassThru'
-            appArch = '$adtSession.AppArch'
-            appLang = '$adtSession.AppLang'
-            appName = '$adtSession.AppName'
-            appRevision = '$adtSession.AppRevision'
-            appScriptAuthor = '$adtSession.AppScriptAuthor'
-            appScriptDate = '$adtSession.AppScriptDate'
-            appScriptVersion = '$adtSession.AppScriptVersion'
-            appVendor = '$adtSession.AppVendor'
-            appVersion = '$adtSession.AppVersion'
-            currentDate = '$adtSession.CurrentDate'
-            currentDateTime = '$adtSession.CurrentDateTime'
-            defaultMsiFile = '$adtSession.DefaultMsiFile'
-            deployAppScriptDate = $null
-            deployAppScriptFriendlyName = '$adtSession.DeployAppScriptFriendlyName'
-            deployAppScriptParameters = '$adtSession.DeployAppScriptParameters'
-            deployAppScriptVersion = '$adtSession.DeployAppScriptVersion'
-            DeploymentType = '$adtSession.DeploymentType'
-            deploymentTypeName = '$adtSession.DeploymentTypeName'
-            DeployMode = '$adtSession.DeployMode'
-            dirFiles = '$adtSession.DirFiles'
-            dirSupportFiles = '$adtSession.DirSupportFiles'
-            DisableScriptLogging = '$adtSession.DisableLogging'
-            installName = '$adtSession.InstallName'
-            installPhase = '$adtSession.InstallPhase'
-            installTitle = '$adtSession.InstallTitle'
-            logName = '$adtSession.LogName'
-            logTempFolder = '$adtSession.LogTempFolder'
-            scriptDirectory = '$adtSession.ScriptDirectory'
-            TerminalServerMode = '$adtSession.TerminalServerMode'
-            useDefaultMsi = '$adtSession.UseDefaultMsi'
-            appDeployConfigFile = $null
-            appDeployCustomTypesSourceCode = $null
-            appDeployExtScriptDate = $null
-            appDeployExtScriptFriendlyName = $null
-            appDeployExtScriptParameters = $null
-            appDeployExtScriptVersion = $null
-            appDeployLogoBanner = $null
-            appDeployLogoBannerHeight = $null
-            appDeployLogoBannerMaxHeight = $null
-            appDeployLogoBannerObject = $null
-            appDeployLogoIcon = $null
-            appDeployLogoImage = $null
-            appDeployMainScriptAsyncParameters = $null
-            appDeployMainScriptDate = $null
-            appDeployMainScriptFriendlyName = $null
-            appDeployMainScriptMinimumConfigVersion = $null
-            appDeployMainScriptParameters = $null
-            appDeployRunHiddenVbsFile = $null
-            appDeployToolkitDotSourceExtensions = $null
-            appDeployToolkitExtName = $null
-            AsyncToolkitLaunch = $null
-            BlockExecution = $null
-            ButtonLeftText = $null
-            ButtonMiddleText = $null
-            ButtonRightText = $null
-            CleanupBlockedApps = $null
-            closeAppsCountdownGlobal = $null
-            configBalloonTextComplete = '(Get-ADTStringTable).BalloonText.Complete'
-            configBalloonTextError = '(Get-ADTStringTable).BalloonText.Error'
-            configBalloonTextFastRetry = '(Get-ADTStringTable).BalloonText.FastRetry'
-            configBalloonTextRestartRequired = '(Get-ADTStringTable).BalloonText.RestartRequired'
-            configBalloonTextStart = '(Get-ADTStringTable).BalloonText.Start'
-            configBannerIconBannerName = '(Get-ADTConfig).Assets.Banner'
-            configBannerIconFileName = $null
-            configBannerLogoImageFileName = '(Get-ADTConfig).Assets.Logo'
-            configBlockExecutionMessage = '(Get-ADTStringTable).BlockExecution.Message'
-            configClosePromptButtonClose = '(Get-ADTStringTable).ClosePrompt.ButtonClose'
-            configClosePromptButtonContinue = '(Get-ADTStringTable).ClosePrompt.ButtonContinue'
-            configClosePromptButtonContinueTooltip = '(Get-ADTStringTable).ClosePrompt.ButtonContinueTooltip'
-            configClosePromptButtonDefer = '(Get-ADTStringTable).ClosePrompt.ButtonDefer'
-            configClosePromptCountdownMessage = '(Get-ADTStringTable).ClosePrompt.CountdownMessage'
-            configClosePromptMessage = '(Get-ADTStringTable).ClosePrompt.Message'
-            configConfigDate = $null
-            configConfigDetails = $null
-            configConfigVersion = $null
-            configDeferPromptDeadline = '(Get-ADTStringTable).DeferPrompt.Deadline'
-            configDeferPromptExpiryMessage = '(Get-ADTStringTable).DeferPrompt.ExpiryMessage'
-            configDeferPromptRemainingDeferrals = '(Get-ADTStringTable).DeferPrompt.RemainingDeferrals'
-            configDeferPromptWarningMessage = '(Get-ADTStringTable).DeferPrompt.WarningMessage'
-            configDeferPromptWelcomeMessage = '(Get-ADTStringTable).DeferPrompt.WelcomeMessage'
-            configDeploymentTypeInstall = '(Get-ADTStringTable).DeploymentType.Install'
-            configDeploymentTypeRepair = '(Get-ADTStringTable).DeploymentType.Repair'
-            configDeploymentTypeUnInstall = '(Get-ADTStringTable).DeploymentType.Uninstall'
-            configDiskSpaceMessage = '(Get-ADTStringTable).DiskSpace.Message'
-            configInstallationDeferExitCode = '(Get-ADTConfig).UI.DeferExitCode'
-            configInstallationPersistInterval = '(Get-ADTConfig).UI.DefaultPromptPersistInterval'
-            configInstallationPromptToSave = '(Get-ADTConfig).UI.PromptToSaveTimeout'
-            configInstallationRestartPersistInterval = '(Get-ADTConfig).UI.RestartPromptPersistInterval'
-            configInstallationUIExitCode = '(Get-ADTConfig).UI.DefaultExitCode'
-            configInstallationUILanguageOverride = '(Get-ADTConfig).UI.LanguageOverride'
-            configInstallationUITimeout = '(Get-ADTConfig).UI.DefaultTimeout'
-            configInstallationWelcomePromptDynamicRunningProcessEvaluation = '(Get-ADTConfig).UI.DynamicProcessEvaluation'
-            configInstallationWelcomePromptDynamicRunningProcessEvaluationInterval = '(Get-ADTConfig).UI.DynamicProcessEvaluationInterval'
-            configMSIInstallParams = '(Get-ADTConfig).MSI.InstallParams'
-            configMSILogDir = 'if ($isAdmin) { (Get-ADTConfig).MSI.LogPath } else { (Get-ADTConfig).MSI.LogPathNoAdminRights }'
-            configMSILoggingOptions = '(Get-ADTConfig).MSI.LoggingOptions'
-            configMSIMutexWaitTime = '(Get-ADTConfig).MSI.MutexWaitTime'
-            configMSISilentParams = '(Get-ADTConfig).MSI.SilentParams'
-            configMSIUninstallParams = '(Get-ADTConfig).MSI.UninstallParams'
-            configProgressMessageInstall = '(Get-ADTStringTable).Progress.MessageInstall'
-            configProgressMessageRepair = '(Get-ADTStringTable).Progress.MessageRepair'
-            configProgressMessageUninstall = '(Get-ADTStringTable).Progress.MessageUninstall'
-            configRestartPromptButtonRestartLater = '(Get-ADTStringTable).RestartPrompt.ButtonRestartLater'
-            configRestartPromptButtonRestartNow = '(Get-ADTStringTable).RestartPrompt.ButtonRestartNow'
-            configRestartPromptMessage = '(Get-ADTStringTable).RestartPrompt.Message'
-            configRestartPromptMessageRestart = '(Get-ADTStringTable).RestartPrompt.MessageRestart'
-            configRestartPromptMessageTime = '(Get-ADTStringTable).RestartPrompt.MessageTime'
-            configRestartPromptTimeRemaining = '(Get-ADTStringTable).RestartPrompt.TimeRemaining'
-            configRestartPromptTitle = '(Get-ADTStringTable).RestartPrompt.Title'
-            configShowBalloonNotifications = '(Get-ADTConfig).UI.BalloonNotifications'
-            configToastAppName = '(Get-ADTConfig).UI.BalloonTitle'
-            configToastDisable = '(Get-ADTConfig).UI.BalloonNotifications'
-            configToolkitCachePath = '(Get-ADTConfig).Toolkit.CachePath'
-            configToolkitCompressLogs = '(Get-ADTConfig).Toolkit.CompressLogs'
-            configToolkitLogAppend = '(Get-ADTConfig).Toolkit.LogAppend'
-            configToolkitLogDebugMessage = '(Get-ADTConfig).Toolkit.LogDebugMessage'
-            configToolkitLogDir = 'if ($isAdmin) { (Get-ADTConfig).Toolkit.LogPath } else { (Get-ADTConfig).Toolkit.LogPathNoAdminRights }'
-            configToolkitLogMaxHistory = '(Get-ADTConfig).Toolkit.LogMaxHistory'
-            configToolkitLogMaxSize = '(Get-ADTConfig).Toolkit.LogMaxSize'
-            configToolkitLogStyle = '(Get-ADTConfig).Toolkit.LogStyle'
-            configToolkitLogWriteToHost = '(Get-ADTConfig).Toolkit.LogWriteToHost'
-            configToolkitRegPath = '(Get-ADTConfig).Toolkit.RegPath'
-            configToolkitRequireAdmin = '(Get-ADTConfig).Toolkit.RequireAdmin'
-            configToolkitTempPath = 'if ($isAdmin) { (Get-ADTConfig).Toolkit.TempPath } else { (Get-ADTConfig).Toolkit.TempPathNoAdminRights }'
-            configToolkitUseRobocopy = '(Get-ADTConfig).Toolkit.FileCopyMode -eq ''Robocopy'''
-            configWelcomePromptCountdownMessage = '(Get-ADTStringTable).WelcomePrompt.Classic.CountdownMessage'
-            configWelcomePromptCustomMessage = '(Get-ADTStringTable).WelcomePrompt.Classic.CustomMessage'
-            CountdownNoHideSeconds = $null
-            CountdownSeconds = $null
-            currentTime = $null
-            currentTimeZoneBias = $null
-            defaultFont = $null
-            deployModeNonInteractive = $null
-            deployModeSilent = $null
-            DeviceContextHandle = $null
-            dirAppDeployTemp = $null
-            dpiPixels = $null
-            dpiScale = $null
-            envOfficeChannelProperty = $null
-            envShellFolders = $null
-            exeMsiexec = $null
-            exeSchTasks = $null
-            exeWusa = $null
-            ExitOnTimeout = $null
-            formattedOSArch = $null
-            formWelcomeStartPosition = $null
-            GetAccountNameUsingSid = $null
-            GetDisplayScaleFactor = $null
-            GetLoggedOnUserDetails = $null
-            GetLoggedOnUserTempPath = $null
-            GraphicsObject = $null
-            HKULanguages = $null
-            HKUPrimaryLanguageShort = $null
-            hr = $null
-            Icon = $null
-            installationStarted = $null
-            InvocationInfo = $null
-            invokingScript = $null
-            IsOOBEComplete = 'Test-ADTOobeCompleted'
-            IsTaskSchedulerHealthy = $null
-            LocalPowerUsersGroup = $null
-            LogFileInitialized = $null
-            loggedOnUserTempPath = $null
-            LogicalScreenHeight = $null
-            LogTimeZoneBias = $null
-            mainExitCode = $null
-            Message = $null
-            MessageAlignment = $null
-            MinimizeWindows = $null
-            moduleAppDeployToolkitMain = $null
-            msiRebootDetected = $null
-            NoCountdown = $null
-            notifyIcon = $null
-            OldDisableLoggingValue = $null
-            oldPSWindowTitle = $null
-            PersistPrompt = $null
-            PhysicalScreenHeight = $null
-            PrimaryWindowsUILanguage = $null
-            ProgressRunspace = $null
-            ProgressSyncHash = $null
-            ReferencedAssemblies = $null
-            ReferredInstallName = $null
-            ReferredInstallTitle = $null
-            ReferredLogName = $null
-            regKeyAppExecution = $null
-            regKeyApplications = $null
-            regKeyDeferHistory = $null
-            regKeyLotusNotes = $null
-            RevertScriptLogging = $null
-            runningProcessDescriptions = $null
-            scriptFileName = $null
-            scriptName = $null
-            scriptParentPath = $null
-            scriptPath = $null
-            scriptRoot = $null
-            scriptSeparator = $null
-            ShowBlockedAppDialog = $null
-            ShowInstallationPrompt = $null
-            ShowInstallationRestartPrompt = $null
-            switch = $null
-            Timeout = $null
-            Title = $null
-            TopMost = $null
-            TypeDef = $null
-            UserDisplayScaleFactor = $null
-            welcomeTimer = $null
-            xmlBannerIconOptions = $null
-            xmlConfig = $null
-            xmlConfigFile = $null
-            xmlConfigMSIOptions = $null
-            xmlConfigUIOptions = $null
-            xmlLoadLocalizedUIMessages = $null
-            xmlToastOptions = $null
-            xmlToolkitOptions = $null
-            xmlUIMessageLanguage = $null
-            xmlUIMessages = $null
+        #region PSAppDeployToolkit v3.10.2 Function Definitions
+        function Write-FunctionHeaderOrFooter
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$CmdletName,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Header')]
+                [AllowEmptyCollection()]
+                [Hashtable]$CmdletBoundParameters,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Header')]
+                [Switch]$Header,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Footer')]
+                [Switch]$Footer
+            )
         }
+
+        function Execute-MSP
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [Alias('FilePath')]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [String]$AddParameters
+            )
+        }
+
+        function Write-Log
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+                [AllowEmptyCollection()]
+                [Alias('Text')]
+                [String[]]$Message,
+                [Parameter(Mandatory = $false, Position = 1)]
+                [Int16]$Severity,
+                [Parameter(Mandatory = $false, Position = 2)]
+                [String]$Source,
+                [Parameter(Mandatory = $false, Position = 3)]
+                [String]$ScriptSection,
+                [Parameter(Mandatory = $false, Position = 4)]
+                [String]$LogType,
+                [Parameter(Mandatory = $false, Position = 5)]
+                [String]$LogFileDirectory,
+                [Parameter(Mandatory = $false, Position = 6)]
+                [String]$LogFileName,
+                [Parameter(Mandatory = $false, Position = 7)]
+                [Boolean]$AppendToLogFile,
+                [Parameter(Mandatory = $false, Position = 8)]
+                [Int]$MaxLogHistory,
+                [Parameter(Mandatory = $false, Position = 9)]
+                [Decimal]$MaxLogFileSizeMB,
+                [Parameter(Mandatory = $false, Position = 10)]
+                [Boolean]$ContinueOnError,
+                [Parameter(Mandatory = $false, Position = 11)]
+                [Boolean]$WriteHost,
+                [Parameter(Mandatory = $false, Position = 12)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false, Position = 13)]
+                [Switch]$DebugMessage,
+                [Parameter(Mandatory = $false, Position = 14)]
+                [Boolean]$LogDebugMessage
+            )
+        }
+
+        function Remove-InvalidFileNameChars
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+                [AllowEmptyString()]
+                [String]$Name
+            )
+        }
+
+        function New-ZipFile
+        {
+            [CmdletBinding(DefaultParameterSetName = 'CreateFromDirectory')]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [String]$DestinationArchiveDirectoryPath,
+                [Parameter(Mandatory = $true, Position = 1)]
+                [String]$DestinationArchiveFileName,
+                [Parameter(Mandatory = $true, Position = 2, ParameterSetName = 'CreateFromDirectory')]
+                [String[]]$SourceDirectoryPath,
+                [Parameter(Mandatory = $true, Position = 2, ParameterSetName = 'CreateFromFile')]
+                [String[]]$SourceFilePath,
+                [Parameter(Mandatory = $false, Position = 3)]
+                [Switch]$RemoveSourceAfterArchiving,
+                [Parameter(Mandatory = $false, Position = 4)]
+                [Switch]$OverWriteArchive,
+                [Parameter(Mandatory = $false, Position = 5)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Exit-Script
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Int32]$ExitCode
+            )
+        }
+
+        function Resolve-Error
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+                [AllowEmptyCollection()]
+                [Array]$ErrorRecord,
+                [Parameter(Mandatory = $false, Position = 1)]
+                [String[]]$Property,
+                [Parameter(Mandatory = $false, Position = 2)]
+                [Switch]$GetErrorRecord,
+                [Parameter(Mandatory = $false, Position = 3)]
+                [Switch]$GetErrorInvocation,
+                [Parameter(Mandatory = $false, Position = 4)]
+                [Switch]$GetErrorException,
+                [Parameter(Mandatory = $false, Position = 5)]
+                [Switch]$GetErrorInnerException
+            )
+        }
+
+        function Show-InstallationPrompt
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$Title,
+                [Parameter(Mandatory = $false)]
+                [String]$Message,
+                [Parameter(Mandatory = $false)]
+                [String]$MessageAlignment,
+                [Parameter(Mandatory = $false)]
+                [String]$ButtonRightText,
+                [Parameter(Mandatory = $false)]
+                [String]$ButtonLeftText,
+                [Parameter(Mandatory = $false)]
+                [String]$ButtonMiddleText,
+                [Parameter(Mandatory = $false)]
+                [String]$Icon,
+                [Parameter(Mandatory = $false)]
+                [Switch]$NoWait,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PersistPrompt,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$MinimizeWindows,
+                [Parameter(Mandatory = $false)]
+                [Int32]$Timeout,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExitOnTimeout,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$TopMost
+            )
+        }
+
+        function Show-DialogBox
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [String]$Text,
+                [Parameter(Mandatory = $false)]
+                [String]$Title,
+                [Parameter(Mandatory = $false)]
+                [String]$Buttons,
+                [Parameter(Mandatory = $false)]
+                [String]$DefaultButton,
+                [Parameter(Mandatory = $false)]
+                [String]$Icon,
+                [Parameter(Mandatory = $false)]
+                [String]$Timeout,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$TopMost
+            )
+        }
+
+        function Get-HardwarePlatform
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-FreeDiskSpace
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$Drive,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-InstalledApplication
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String[]]$Name,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Exact,
+                [Parameter(Mandatory = $false)]
+                [Switch]$WildCard,
+                [Parameter(Mandatory = $false)]
+                [Switch]$RegEx,
+                [Parameter(Mandatory = $false)]
+                [String]$ProductCode,
+                [Parameter(Mandatory = $false)]
+                [Switch]$IncludeUpdatesAndHotfixes
+            )
+        }
+
+        function Execute-MSI
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$Action,
+                [Parameter(Mandatory = $true)]
+                [Alias('FilePath')]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [String]$Transform,
+                [Parameter(Mandatory = $false)]
+                [Alias('Arguments')]
+                [String]$Parameters,
+                [Parameter(Mandatory = $false)]
+                [String]$AddParameters,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SecureParameters,
+                [Parameter(Mandatory = $false)]
+                [String]$Patch,
+                [Parameter(Mandatory = $false)]
+                [String]$LoggingOptions,
+                [Parameter(Mandatory = $false)]
+                [Alias('LogName')]
+                [String]$private:LogName,
+                [Parameter(Mandatory = $false)]
+                [String]$WorkingDirectory,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SkipMSIAlreadyInstalledCheck,
+                [Parameter(Mandatory = $false)]
+                [Switch]$IncludeUpdatesAndHotfixes,
+                [Parameter(Mandatory = $false)]
+                [Switch]$NoWait,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false)]
+                [String]$IgnoreExitCodes,
+                [Parameter(Mandatory = $false)]
+                [Diagnostics.ProcessPriorityClass]$PriorityClass,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExitOnProcessFailure,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$RepairFromSource,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Remove-MSIApplications
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Exact,
+                [Parameter(Mandatory = $false)]
+                [Switch]$WildCard,
+                [Parameter(Mandatory = $false)]
+                [Alias('Arguments')]
+                [String]$Parameters,
+                [Parameter(Mandatory = $false)]
+                [String]$AddParameters,
+                [Parameter(Mandatory = $false)]
+                [Array]$FilterApplication,
+                [Parameter(Mandatory = $false)]
+                [Array]$ExcludeFromUninstall,
+                [Parameter(Mandatory = $false)]
+                [Switch]$IncludeUpdatesAndHotfixes,
+                [Parameter(Mandatory = $false)]
+                [String]$LoggingOptions,
+                [Parameter(Mandatory = $false)]
+                [Alias('LogName')]
+                [String]$private:LogName,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Execute-Process
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [Alias('FilePath')]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [Alias('Arguments')]
+                [String[]]$Parameters,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SecureParameters,
+                [Parameter(Mandatory = $false)]
+                [Diagnostics.ProcessWindowStyle]$WindowStyle,
+                [Parameter(Mandatory = $false)]
+                [Switch]$CreateNoWindow,
+                [Parameter(Mandatory = $false)]
+                [String]$WorkingDirectory,
+                [Parameter(Mandatory = $false)]
+                [Switch]$NoWait,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false)]
+                [Switch]$WaitForMsiExec,
+                [Parameter(Mandatory = $false)]
+                [Int32]$MsiExecWaitTime,
+                [Parameter(Mandatory = $false)]
+                [String]$IgnoreExitCodes,
+                [Parameter(Mandatory = $false)]
+                [Diagnostics.ProcessPriorityClass]$PriorityClass,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExitOnProcessFailure,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$UseShellExecute,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-MsiExitCodeMessage
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [Int32]$MsiExitCode
+            )
+        }
+
+        function Test-IsMutexAvailable
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$MutexName,
+                [Parameter(Mandatory = $false)]
+                [Int32]$MutexWaitTimeInMilliseconds
+            )
+        }
+
+        function New-Folder
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Remove-Folder
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [Switch]$DisableRecursion,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Copy-File
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [String[]]$Path,
+                [Parameter(Mandatory = $true, Position = 1)]
+                [String]$Destination,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Recurse,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Flatten,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueFileCopyOnError,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$UseRobocopy,
+                [Parameter(Mandatory = $false)]
+                [String]$RobocopyParams,
+                [String]$RobocopyAdditionalParams
+            )
+        }
+
+        function Remove-File
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ParameterSetName = 'Path')]
+                [String[]]$Path,
+                [Parameter(Mandatory = $true, ParameterSetName = 'LiteralPath')]
+                [String[]]$LiteralPath,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Recurse,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Copy-FileToUserProfiles
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)]
+                [String[]]$Path,
+                [Parameter(Mandatory = $false, Position = 2)]
+                [String]$Destination,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Recurse,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Flatten,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$UseRobocopy,
+                [Parameter(Mandatory = $false)]
+                [String]$RobocopyAdditionalParams,
+                [Parameter(Mandatory = $false)]
+                [String[]]$ExcludeNTAccount,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExcludeSystemProfiles,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExcludeServiceProfiles,
+                [Parameter(Mandatory = $false)]
+                [Switch]$ExcludeDefaultUser,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueFileCopyOnError
+            )
+        }
+
+        function Remove-FileFromUserProfiles
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'Path')]
+                [String[]]$Path,
+                [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'LiteralPath')]
+                [String[]]$LiteralPath,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Recurse,
+                [Parameter(Mandatory = $false)]
+                [String[]]$ExcludeNTAccount,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExcludeSystemProfiles,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExcludeServiceProfiles,
+                [Parameter(Mandatory = $false)]
+                [Switch]$ExcludeDefaultUser,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Convert-RegistryPath
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Key,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Wow6432Node,
+                [Parameter(Mandatory = $false)]
+                [String]$SID,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$DisableFunctionLogging
+            )
+        }
+
+        function Test-RegistryValue
+        {
+            param (
+                [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+                [Parameter(Mandatory = $true, Position = 1)]
+                [Parameter(Mandatory = $false, Position = 2)]
+                [String]$SID,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Wow6432Node
+            )
+        }
+
+        function Get-RegistryKey
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Key,
+                [Parameter(Mandatory = $false)]
+                [String]$Value,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Wow6432Node,
+                [Parameter(Mandatory = $false)]
+                [String]$SID,
+                [Parameter(Mandatory = $false)]
+                [Switch]$ReturnEmptyKeyIfExists,
+                [Parameter(Mandatory = $false)]
+                [Switch]$DoNotExpandEnvironmentNames,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Set-RegistryKey
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Key,
+                [Parameter(Mandatory = $false)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                $Value,
+                [Parameter(Mandatory = $false)]
+                [Microsoft.Win32.RegistryValueKind]$Type,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Wow6432Node,
+                [Parameter(Mandatory = $false)]
+                [String]$SID,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Remove-RegistryKey
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Key,
+                [Parameter(Mandatory = $false)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Recurse,
+                [Parameter(Mandatory = $false)]
+                [String]$SID,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Invoke-HKCURegistrySettingsForAllUsers
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [ScriptBlock]$RegistrySettings,
+                [Parameter(Mandatory = $false)]
+                [PSObject[]]$UserProfiles
+            )
+        }
+
+        function ConvertTo-NTAccountOrSID
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ParameterSetName = 'NTAccountToSID', ValueFromPipelineByPropertyName = $true)]
+                [String]$AccountName,
+                [Parameter(Mandatory = $true, ParameterSetName = 'SIDToNTAccount', ValueFromPipelineByPropertyName = $true)]
+                [String]$SID,
+                [Parameter(Mandatory = $true, ParameterSetName = 'WellKnownName', ValueFromPipelineByPropertyName = $true)]
+                [String]$WellKnownSIDName,
+                [Parameter(Mandatory = $false, ParameterSetName = 'WellKnownName')]
+                [Switch]$WellKnownToNTAccount
+            )
+        }
+
+        function Get-UserProfiles
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String[]]$ExcludeNTAccount,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExcludeSystemProfiles,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ExcludeServiceProfiles,
+                [Parameter(Mandatory = $false)]
+                [Switch]$ExcludeDefaultUser
+            )
+        }
+
+        function Get-FileVersion
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$File,
+                [Parameter(Mandatory = $false)]
+                [Switch]$ProductVersion,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function New-Shortcut
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [String]$Path,
+                [Parameter(Mandatory = $true)]
+                [String]$TargetPath,
+                [Parameter(Mandatory = $false)]
+                [String]$Arguments,
+                [Parameter(Mandatory = $false)]
+                [String]$IconLocation,
+                [Parameter(Mandatory = $false)]
+                [Int32]$IconIndex,
+                [Parameter(Mandatory = $false)]
+                [String]$Description,
+                [Parameter(Mandatory = $false)]
+                [String]$WorkingDirectory,
+                [Parameter(Mandatory = $false)]
+                [String]$WindowStyle,
+                [Parameter(Mandatory = $false)]
+                [Switch]$RunAsAdmin,
+                [Parameter(Mandatory = $false)]
+                [String]$Hotkey,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Set-Shortcut
+        {
+            [CmdletBinding(DefaultParameterSetName = 'Default')]
+            param (
+                [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'Default')]
+                [String]$Path,
+                [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'Pipeline')]
+                [Hashtable]$PathHash,
+                [Parameter(Mandatory = $false)]
+                [String]$TargetPath,
+                [Parameter(Mandatory = $false)]
+                [String]$Arguments,
+                [Parameter(Mandatory = $false)]
+                [String]$IconLocation,
+                [Parameter(Mandatory = $false)]
+                [String]$IconIndex,
+                [Parameter(Mandatory = $false)]
+                [String]$Description,
+                [Parameter(Mandatory = $false)]
+                [String]$WorkingDirectory,
+                [Parameter(Mandatory = $false)]
+                [String]$WindowStyle,
+                [Parameter(Mandatory = $false)]
+                [System.Nullable[Boolean]]$RunAsAdmin,
+                [Parameter(Mandatory = $false)]
+                [String]$Hotkey,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-Shortcut
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Execute-ProcessAsUser
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$UserName,
+                [Parameter(Mandatory = $true)]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [String]$TempPath,
+                [Parameter(Mandatory = $false)]
+                [String]$Parameters,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SecureParameters,
+                [Parameter(Mandatory = $false)]
+                [String]$RunLevel,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Wait,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false)]
+                [String]$WorkingDirectory,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Update-Desktop
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+        Set-Alias -Name 'Refresh-Desktop' -Value 'Update-Desktop' -Scope 'Script' -Force -ErrorAction 'SilentlyContinue'
+
+        function Update-SessionEnvironmentVariables
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Switch]$LoadLoggedOnUserEnvironmentVariables,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+        Set-Alias -Name 'Refresh-SessionEnvironmentVariables' -Value 'Update-SessionEnvironmentVariables' -Scope 'Script' -Force -ErrorAction 'SilentlyContinue'
+
+        function Get-SchedulerTask
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$TaskName,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+        If (-not (Get-Command -Name 'Get-ScheduledTask' -ErrorAction 'SilentlyContinue'))
+        {
+            New-Alias -Name 'Get-ScheduledTask' -Value 'Get-SchedulerTask'
+        }
+
+        function Block-AppExecution
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String[]]$ProcessName
+            )
+        }
+
+        function Unblock-AppExecution
+        {
+            [CmdletBinding()]
+            param (
+            )
+        }
+
+        function Get-DeferHistory
+        {
+            [CmdletBinding()]
+            param (
+            )
+        }
+
+        function Set-DeferHistory
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$deferTimesRemaining,
+                [Parameter(Mandatory = $false)]
+                [String]$deferDeadline
+            )
+        }
+
+        function Get-UniversalDate
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$DateTime,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-RunningProcesses
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false, Position = 0)]
+                [PSObject[]]$ProcessObjects,
+                [Parameter(Mandatory = $false, Position = 1)]
+                [Switch]$DisableLogging
+            )
+        }
+
+        function Show-InstallationWelcome
+        {
+            [CmdletBinding(DefaultParametersetName = 'None')]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$CloseApps,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Silent,
+                [Parameter(Mandatory = $false)]
+                [Int32]$CloseAppsCountdown,
+                [Parameter(Mandatory = $false)]
+                [Int32]$ForceCloseAppsCountdown,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PromptToSave,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PersistPrompt,
+                [Parameter(Mandatory = $false)]
+                [Switch]$BlockExecution,
+                [Parameter(Mandatory = $false)]
+                [Switch]$AllowDefer,
+                [Parameter(Mandatory = $false)]
+                [Switch]$AllowDeferCloseApps,
+                [Parameter(Mandatory = $false)]
+                [Int32]$DeferTimes,
+                [Parameter(Mandatory = $false)]
+                [Int32]$DeferDays,
+                [Parameter(Mandatory = $false)]
+                [String]$DeferDeadline,
+                [Parameter(ParameterSetName = 'CheckDiskSpaceParameterSet', Mandatory = $true)]
+                [Switch]$CheckDiskSpace,
+                [Parameter(ParameterSetName = 'CheckDiskSpaceParameterSet', Mandatory = $false)]
+                [Int32]$RequiredDiskSpace,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$MinimizeWindows,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$TopMost,
+                [Parameter(Mandatory = $false)]
+                [Int32]$ForceCountdown,
+                [Parameter(Mandatory = $false)]
+                [Switch]$CustomText
+            )
+        }
+
+        function Show-WelcomePrompt
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$ProcessDescriptions,
+                [Parameter(Mandatory = $false)]
+                [Int32]$CloseAppsCountdown,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ForceCloseAppsCountdown,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$PersistPrompt,
+                [Parameter(Mandatory = $false)]
+                [Switch]$AllowDefer,
+                [Parameter(Mandatory = $false)]
+                [String]$DeferTimes,
+                [Parameter(Mandatory = $false)]
+                [String]$DeferDeadline,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$MinimizeWindows,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$TopMost,
+                [Parameter(Mandatory = $false)]
+                [Int32]$ForceCountdown,
+                [Parameter(Mandatory = $false)]
+                [Switch]$CustomText
+            )
+        }
+
+        function Show-InstallationRestartPrompt
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Int32]$CountdownSeconds,
+                [Parameter(Mandatory = $false)]
+                [Int32]$CountdownNoHideSeconds,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$NoSilentRestart,
+                [Parameter(Mandatory = $false)]
+                [Switch]$NoCountdown,
+                [Parameter(Mandatory = $false)]
+                [Int32]$SilentCountdownSeconds,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$TopMost
+            )
+        }
+
+        function Show-BalloonTip
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [String]$BalloonTipText,
+                [Parameter(Mandatory = $false, Position = 1)]
+                [String]$BalloonTipTitle,
+                [Parameter(Mandatory = $false, Position = 2)]
+                [Windows.Forms.ToolTipIcon]$BalloonTipIcon,
+                [Parameter(Mandatory = $false, Position = 3)]
+                [Int32]$BalloonTipTime,
+                [Parameter(Mandatory = $false, Position = 4)]
+                [Switch]$NoWait
+            )
+        }
+
+        function Show-InstallationProgress
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [String]$StatusMessage,
+                [Parameter(Mandatory = $false)]
+                [String]$WindowLocation,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$TopMost,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Quiet
+            )
+        }
+
+        function Close-InstallationProgress
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Int32]$WaitingTime
+            )
+        }
+
+        function Set-PinnedApplication
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Action,
+                [Parameter(Mandatory = $true)]
+                [String]$FilePath
+            )
+        }
+
+        function Get-IniValue
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$FilePath,
+                [Parameter(Mandatory = $true)]
+                [String]$Section,
+                [Parameter(Mandatory = $true)]
+                [String]$Key,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Set-IniValue
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$FilePath,
+                [Parameter(Mandatory = $true)]
+                [String]$Section,
+                [Parameter(Mandatory = $true)]
+                [String]$Key,
+                [Parameter(Mandatory = $true)]
+                [AllowNull()]
+                $Value,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-PEFileArchitecture
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+                [IO.FileInfo[]]$FilePath,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru
+            )
+        }
+
+        function Invoke-RegisterOrUnregisterDLL
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$FilePath,
+                [Parameter(Mandatory = $false)]
+                [String]$DLLAction,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+        Set-Alias -Name 'Register-DLL' -Value 'Invoke-RegisterOrUnregisterDLL' -Scope 'Script' -Force -ErrorAction 'SilentlyContinue'
+        Set-Alias -Name 'Unregister-DLL' -Value 'Invoke-RegisterOrUnregisterDLL' -Scope 'Script' -Force -ErrorAction 'SilentlyContinue'
+
+        function Invoke-ObjectMethod
+        {
+            [CmdletBinding(DefaultParameterSetName = 'Positional')]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [Object]$InputObject,
+                [Parameter(Mandatory = $true, Position = 1)]
+                [String]$MethodName,
+                [Parameter(Mandatory = $false, Position = 2, ParameterSetName = 'Positional')]
+                [Object[]]$ArgumentList,
+                [Parameter(Mandatory = $true, Position = 2, ParameterSetName = 'Named')]
+                [Hashtable]$Parameter
+            )
+        }
+
+        function Get-ObjectProperty
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [Object]$InputObject,
+                [Parameter(Mandatory = $true, Position = 1)]
+                [String]$PropertyName,
+                [Parameter(Mandatory = $false, Position = 2)]
+                [Object[]]$ArgumentList
+            )
+        }
+
+        function Get-MsiTableProperty
+        {
+            [CmdletBinding(DefaultParameterSetName = 'TableInfo')]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Path,
+                [Parameter(Mandatory = $false)]
+                [String[]]$TransformPath,
+                [Parameter(Mandatory = $false, ParameterSetName = 'TableInfo')]
+                [String]$Table,
+                [Parameter(Mandatory = $false, ParameterSetName = 'TableInfo')]
+                [Int32]$TablePropertyNameColumnNum,
+                [Parameter(Mandatory = $false, ParameterSetName = 'TableInfo')]
+                [Int32]$TablePropertyValueColumnNum,
+                [Parameter(Mandatory = $true, ParameterSetName = 'SummaryInfo')]
+                [Switch]$GetSummaryInformation,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Set-MsiProperty
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [__ComObject]$DataBase,
+                [Parameter(Mandatory = $true)]
+                [String]$PropertyName,
+                [Parameter(Mandatory = $true)]
+                [String]$PropertyValue,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function New-MsiTransform
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$MsiPath,
+                [Parameter(Mandatory = $false)]
+                [String]$ApplyTransformPath,
+                [Parameter(Mandatory = $false)]
+                [String]$NewTransformPath,
+                [Parameter(Mandatory = $true)]
+                [Hashtable]$TransformProperties,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Test-MSUpdates
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, Position = 0)]
+                [String]$KBNumber,
+                [Parameter(Mandatory = $false, Position = 1)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Install-MSUpdates
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Directory
+            )
+        }
+
+        function Get-WindowTitle
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ParameterSetName = 'SearchWinTitle')]
+                [AllowEmptyString()]
+                [String]$WindowTitle,
+                [Parameter(Mandatory = $true, ParameterSetName = 'GetAllWinTitles')]
+                [Switch]$GetAllWindowTitles,
+                [Parameter(Mandatory = $false)]
+                [Switch]$DisableFunctionLogging
+            )
+        }
+
+        function Send-Keys
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false, Position = 0)]
+                [AllowEmptyString()]
+                [String]$WindowTitle,
+                [Parameter(Mandatory = $false, Position = 1)]
+                [Switch]$GetAllWindowTitles,
+                [Parameter(Mandatory = $false, Position = 2)]
+                [IntPtr]$WindowHandle,
+                [Parameter(Mandatory = $false, Position = 3)]
+                [String]$Keys,
+                [Parameter(Mandatory = $false, Position = 4)]
+                [Int32]$WaitSeconds
+            )
+        }
+
+        function Test-Battery
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru
+            )
+        }
+
+        function Test-NetworkConnection
+        {
+            [CmdletBinding()]
+            param (
+            )
+        }
+
+        function Test-PowerPoint
+        {
+            [CmdletBinding()]
+            param (
+            )
+        }
+
+        function Invoke-SCCMTask
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$ScheduleID,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Install-SCCMSoftwareUpdates
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Int32]$SoftwareUpdatesScanWaitInSeconds,
+                [Parameter(Mandatory = $false)]
+                [Timespan]$WaitForPendingUpdatesTimeout,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Update-GroupPolicy
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Enable-TerminalServerInstallMode
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Disable-TerminalServerInstallMode
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Set-ActiveSetup
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ParameterSetName = 'Create')]
+                [String]$StubExePath,
+                [Parameter(Mandatory = $false, ParameterSetName = 'Create')]
+                [String]$Arguments,
+                [Parameter(Mandatory = $false, ParameterSetName = 'Create')]
+                [String]$Description,
+                [Parameter(Mandatory = $false)]
+                [String]$Key,
+                [Parameter(Mandatory = $false)]
+                [Switch]$Wow6432Node,
+                [Parameter(Mandatory = $false, ParameterSetName = 'Create')]
+                [String]$Version,
+                [Parameter(Mandatory = $false, ParameterSetName = 'Create')]
+                [String]$Locale,
+                [Parameter(Mandatory = $false, ParameterSetName = 'Create')]
+                [Switch]$DisableActiveSetup,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Purge')]
+                [Switch]$PurgeActiveSetupKey,
+                [Parameter(Mandatory = $false, ParameterSetName = 'Create')]
+                [Boolean]$ExecuteForCurrentUser,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Test-ServiceExists
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                [String]$ComputerName,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Stop-ServiceAndDependencies
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                [String]$ComputerName,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SkipServiceExistsTest,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SkipDependentServices,
+                [Parameter(Mandatory = $false)]
+                [Timespan]$PendingStatusWait,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Start-ServiceAndDependencies
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                [String]$ComputerName,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SkipServiceExistsTest,
+                [Parameter(Mandatory = $false)]
+                [Switch]$SkipDependentServices,
+                [Parameter(Mandatory = $false)]
+                [Timespan]$PendingStatusWait,
+                [Parameter(Mandatory = $false)]
+                [Switch]$PassThru,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-ServiceStartMode
+        {
+            [CmdLetBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                [String]$ComputerName,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Set-ServiceStartMode
+        {
+            [CmdLetBinding()]
+            param (
+                [Parameter(Mandatory = $true)]
+                [String]$Name,
+                [Parameter(Mandatory = $false)]
+                [String]$ComputerName,
+                [Parameter(Mandatory = $true)]
+                [String]$StartMode,
+                [Parameter(Mandatory = $false)]
+                [Boolean]$ContinueOnError
+            )
+        }
+
+        function Get-LoggedOnUser
+        {
+            [CmdletBinding()]
+            param (
+            )
+        }
+
+        function Get-PendingReboot
+        {
+            [CmdletBinding()]
+            param (
+            )
+        }
+
+        function Set-ItemPermission
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter( Mandatory = $true, Position = 0, ParameterSetName = 'DisableInheritance' )]
+                [Parameter( Mandatory = $true, Position = 0, ParameterSetName = 'EnableInheritance' )]
+                [Alias('File', 'Folder')]
+                [String]$Path,
+                [Parameter( Mandatory = $true, Position = 1, ParameterSetName = 'DisableInheritance')]
+                [Alias('Username', 'Users', 'SID', 'Usernames')]
+                [String[]]$User,
+                [Parameter( Mandatory = $true, Position = 2, ParameterSetName = 'DisableInheritance')]
+                [Alias('Acl', 'Grant', 'Permissions', 'Deny')]
+                [String[]]$Permission,
+                [Parameter( Mandatory = $false, Position = 3, ParameterSetName = 'DisableInheritance')]
+                [Alias('AccessControlType')]
+                [String]$PermissionType,
+                [Parameter( Mandatory = $false, Position = 4, ParameterSetName = 'DisableInheritance')]
+                [String[]]$Inheritance,
+                [Parameter( Mandatory = $false, Position = 5, ParameterSetName = 'DisableInheritance')]
+                [String]$Propagation,
+                [Parameter( Mandatory = $false, Position = 6, ParameterSetName = 'DisableInheritance')]
+                [Alias('ApplyMethod', 'ApplicationMethod')]
+                [String]$Method,
+                [Parameter( Mandatory = $true, Position = 1, ParameterSetName = 'EnableInheritance')]
+                [Switch]$EnableInheritance
+            )
+        }
+
+        function Copy-ContentToCache
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false, Position = 0)]
+                [String]$Path
+            )
+        }
+
+        function Remove-ContentFromCache
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $false, Position = 0)]
+                [String]$Path
+            )
+        }
+
+        function Configure-EdgeExtension
+        {
+            [CmdletBinding()]
+            param (
+                [Parameter(Mandatory = $true, ParameterSetName = 'Add')]
+                [Switch]$Add,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Remove')]
+                [Switch]$Remove,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Add')]
+                [Parameter(Mandatory = $true, ParameterSetName = 'Remove')]
+                [String]$ExtensionID,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Add')]
+                [String]$InstallationMode,
+                [Parameter(Mandatory = $true, ParameterSetName = 'Add')]
+                [String]$UpdateUrl,
+                [Parameter(Mandatory = $false, ParameterSetName = 'Add')]
+                [String]$MinimumVersionRequired
+            )
+        }
+        #endregion
 
         $functionMappings = @{
             'Write-Log' = @{
@@ -1006,6 +2202,226 @@ function Measure-ADTCompatibility
             'Set-PinnedApplication' = @{
                 'NewFunction' = '# The function [Set-PinnedApplication] has been removed from PSAppDeployToolkit as its functionality no longer works with Windows 10 1809 or higher targets.'
             }
+        }
+
+        $variableMappings = @{
+            AllowRebootPassThru = '$adtSession.AllowRebootPassThru'
+            appArch = '$adtSession.AppArch'
+            appLang = '$adtSession.AppLang'
+            appName = '$adtSession.AppName'
+            appRevision = '$adtSession.AppRevision'
+            appScriptAuthor = '$adtSession.AppScriptAuthor'
+            appScriptDate = '$adtSession.AppScriptDate'
+            appScriptVersion = '$adtSession.AppScriptVersion'
+            appVendor = '$adtSession.AppVendor'
+            appVersion = '$adtSession.AppVersion'
+            currentDate = '$adtSession.CurrentDate'
+            currentDateTime = '$adtSession.CurrentDateTime'
+            defaultMsiFile = '$adtSession.DefaultMsiFile'
+            deployAppScriptDate = $null
+            deployAppScriptFriendlyName = '$adtSession.DeployAppScriptFriendlyName'
+            deployAppScriptParameters = '$adtSession.DeployAppScriptParameters'
+            deployAppScriptVersion = '$adtSession.DeployAppScriptVersion'
+            DeploymentType = '$adtSession.DeploymentType'
+            deploymentTypeName = '$adtSession.DeploymentTypeName'
+            DeployMode = '$adtSession.DeployMode'
+            dirFiles = '$adtSession.DirFiles'
+            dirSupportFiles = '$adtSession.DirSupportFiles'
+            DisableScriptLogging = '$adtSession.DisableLogging'
+            installName = '$adtSession.InstallName'
+            installPhase = '$adtSession.InstallPhase'
+            installTitle = '$adtSession.InstallTitle'
+            logName = '$adtSession.LogName'
+            logTempFolder = '$adtSession.LogTempFolder'
+            scriptDirectory = '$adtSession.ScriptDirectory'
+            TerminalServerMode = '$adtSession.TerminalServerMode'
+            useDefaultMsi = '$adtSession.UseDefaultMsi'
+            appDeployConfigFile = $null
+            appDeployCustomTypesSourceCode = $null
+            appDeployExtScriptDate = $null
+            appDeployExtScriptFriendlyName = $null
+            appDeployExtScriptParameters = $null
+            appDeployExtScriptVersion = $null
+            appDeployLogoBanner = $null
+            appDeployLogoBannerHeight = $null
+            appDeployLogoBannerMaxHeight = $null
+            appDeployLogoBannerObject = $null
+            appDeployLogoIcon = $null
+            appDeployLogoImage = $null
+            appDeployMainScriptAsyncParameters = $null
+            appDeployMainScriptDate = $null
+            appDeployMainScriptFriendlyName = $null
+            appDeployMainScriptMinimumConfigVersion = $null
+            appDeployMainScriptParameters = $null
+            appDeployRunHiddenVbsFile = $null
+            appDeployToolkitDotSourceExtensions = $null
+            appDeployToolkitExtName = $null
+            AsyncToolkitLaunch = $null
+            BlockExecution = $null
+            ButtonLeftText = $null
+            ButtonMiddleText = $null
+            ButtonRightText = $null
+            CleanupBlockedApps = $null
+            closeAppsCountdownGlobal = $null
+            configBalloonTextComplete = '(Get-ADTStringTable).BalloonText.Complete'
+            configBalloonTextError = '(Get-ADTStringTable).BalloonText.Error'
+            configBalloonTextFastRetry = '(Get-ADTStringTable).BalloonText.FastRetry'
+            configBalloonTextRestartRequired = '(Get-ADTStringTable).BalloonText.RestartRequired'
+            configBalloonTextStart = '(Get-ADTStringTable).BalloonText.Start'
+            configBannerIconBannerName = '(Get-ADTConfig).Assets.Banner'
+            configBannerIconFileName = $null
+            configBannerLogoImageFileName = '(Get-ADTConfig).Assets.Logo'
+            configBlockExecutionMessage = '(Get-ADTStringTable).BlockExecution.Message'
+            configClosePromptButtonClose = '(Get-ADTStringTable).ClosePrompt.ButtonClose'
+            configClosePromptButtonContinue = '(Get-ADTStringTable).ClosePrompt.ButtonContinue'
+            configClosePromptButtonContinueTooltip = '(Get-ADTStringTable).ClosePrompt.ButtonContinueTooltip'
+            configClosePromptButtonDefer = '(Get-ADTStringTable).ClosePrompt.ButtonDefer'
+            configClosePromptCountdownMessage = '(Get-ADTStringTable).ClosePrompt.CountdownMessage'
+            configClosePromptMessage = '(Get-ADTStringTable).ClosePrompt.Message'
+            configConfigDate = $null
+            configConfigDetails = $null
+            configConfigVersion = $null
+            configDeferPromptDeadline = '(Get-ADTStringTable).DeferPrompt.Deadline'
+            configDeferPromptExpiryMessage = '(Get-ADTStringTable).DeferPrompt.ExpiryMessage'
+            configDeferPromptRemainingDeferrals = '(Get-ADTStringTable).DeferPrompt.RemainingDeferrals'
+            configDeferPromptWarningMessage = '(Get-ADTStringTable).DeferPrompt.WarningMessage'
+            configDeferPromptWelcomeMessage = '(Get-ADTStringTable).DeferPrompt.WelcomeMessage'
+            configDeploymentTypeInstall = '(Get-ADTStringTable).DeploymentType.Install'
+            configDeploymentTypeRepair = '(Get-ADTStringTable).DeploymentType.Repair'
+            configDeploymentTypeUnInstall = '(Get-ADTStringTable).DeploymentType.Uninstall'
+            configDiskSpaceMessage = '(Get-ADTStringTable).DiskSpace.Message'
+            configInstallationDeferExitCode = '(Get-ADTConfig).UI.DeferExitCode'
+            configInstallationPersistInterval = '(Get-ADTConfig).UI.DefaultPromptPersistInterval'
+            configInstallationPromptToSave = '(Get-ADTConfig).UI.PromptToSaveTimeout'
+            configInstallationRestartPersistInterval = '(Get-ADTConfig).UI.RestartPromptPersistInterval'
+            configInstallationUIExitCode = '(Get-ADTConfig).UI.DefaultExitCode'
+            configInstallationUILanguageOverride = '(Get-ADTConfig).UI.LanguageOverride'
+            configInstallationUITimeout = '(Get-ADTConfig).UI.DefaultTimeout'
+            configInstallationWelcomePromptDynamicRunningProcessEvaluation = '(Get-ADTConfig).UI.DynamicProcessEvaluation'
+            configInstallationWelcomePromptDynamicRunningProcessEvaluationInterval = '(Get-ADTConfig).UI.DynamicProcessEvaluationInterval'
+            configMSIInstallParams = '(Get-ADTConfig).MSI.InstallParams'
+            configMSILogDir = 'if ($isAdmin) { (Get-ADTConfig).MSI.LogPath } else { (Get-ADTConfig).MSI.LogPathNoAdminRights }'
+            configMSILoggingOptions = '(Get-ADTConfig).MSI.LoggingOptions'
+            configMSIMutexWaitTime = '(Get-ADTConfig).MSI.MutexWaitTime'
+            configMSISilentParams = '(Get-ADTConfig).MSI.SilentParams'
+            configMSIUninstallParams = '(Get-ADTConfig).MSI.UninstallParams'
+            configProgressMessageInstall = '(Get-ADTStringTable).Progress.MessageInstall'
+            configProgressMessageRepair = '(Get-ADTStringTable).Progress.MessageRepair'
+            configProgressMessageUninstall = '(Get-ADTStringTable).Progress.MessageUninstall'
+            configRestartPromptButtonRestartLater = '(Get-ADTStringTable).RestartPrompt.ButtonRestartLater'
+            configRestartPromptButtonRestartNow = '(Get-ADTStringTable).RestartPrompt.ButtonRestartNow'
+            configRestartPromptMessage = '(Get-ADTStringTable).RestartPrompt.Message'
+            configRestartPromptMessageRestart = '(Get-ADTStringTable).RestartPrompt.MessageRestart'
+            configRestartPromptMessageTime = '(Get-ADTStringTable).RestartPrompt.MessageTime'
+            configRestartPromptTimeRemaining = '(Get-ADTStringTable).RestartPrompt.TimeRemaining'
+            configRestartPromptTitle = '(Get-ADTStringTable).RestartPrompt.Title'
+            configShowBalloonNotifications = '(Get-ADTConfig).UI.BalloonNotifications'
+            configToastAppName = '(Get-ADTConfig).UI.BalloonTitle'
+            configToastDisable = '(Get-ADTConfig).UI.BalloonNotifications'
+            configToolkitCachePath = '(Get-ADTConfig).Toolkit.CachePath'
+            configToolkitCompressLogs = '(Get-ADTConfig).Toolkit.CompressLogs'
+            configToolkitLogAppend = '(Get-ADTConfig).Toolkit.LogAppend'
+            configToolkitLogDebugMessage = '(Get-ADTConfig).Toolkit.LogDebugMessage'
+            configToolkitLogDir = 'if ($isAdmin) { (Get-ADTConfig).Toolkit.LogPath } else { (Get-ADTConfig).Toolkit.LogPathNoAdminRights }'
+            configToolkitLogMaxHistory = '(Get-ADTConfig).Toolkit.LogMaxHistory'
+            configToolkitLogMaxSize = '(Get-ADTConfig).Toolkit.LogMaxSize'
+            configToolkitLogStyle = '(Get-ADTConfig).Toolkit.LogStyle'
+            configToolkitLogWriteToHost = '(Get-ADTConfig).Toolkit.LogWriteToHost'
+            configToolkitRegPath = '(Get-ADTConfig).Toolkit.RegPath'
+            configToolkitRequireAdmin = '(Get-ADTConfig).Toolkit.RequireAdmin'
+            configToolkitTempPath = 'if ($isAdmin) { (Get-ADTConfig).Toolkit.TempPath } else { (Get-ADTConfig).Toolkit.TempPathNoAdminRights }'
+            configToolkitUseRobocopy = '(Get-ADTConfig).Toolkit.FileCopyMode -eq ''Robocopy'''
+            configWelcomePromptCountdownMessage = '(Get-ADTStringTable).WelcomePrompt.Classic.CountdownMessage'
+            configWelcomePromptCustomMessage = '(Get-ADTStringTable).WelcomePrompt.Classic.CustomMessage'
+            CountdownNoHideSeconds = $null
+            CountdownSeconds = $null
+            currentTime = $null
+            currentTimeZoneBias = $null
+            defaultFont = $null
+            deployModeNonInteractive = $null
+            deployModeSilent = $null
+            DeviceContextHandle = $null
+            dirAppDeployTemp = $null
+            dpiPixels = $null
+            dpiScale = $null
+            envOfficeChannelProperty = $null
+            envShellFolders = $null
+            exeMsiexec = $null
+            exeSchTasks = $null
+            exeWusa = $null
+            ExitOnTimeout = $null
+            formattedOSArch = $null
+            formWelcomeStartPosition = $null
+            GetAccountNameUsingSid = $null
+            GetDisplayScaleFactor = $null
+            GetLoggedOnUserDetails = $null
+            GetLoggedOnUserTempPath = $null
+            GraphicsObject = $null
+            HKULanguages = $null
+            HKUPrimaryLanguageShort = $null
+            hr = $null
+            Icon = $null
+            installationStarted = $null
+            InvocationInfo = $null
+            invokingScript = $null
+            IsOOBEComplete = 'Test-ADTOobeCompleted'
+            IsTaskSchedulerHealthy = $null
+            LocalPowerUsersGroup = $null
+            LogFileInitialized = $null
+            loggedOnUserTempPath = $null
+            LogicalScreenHeight = $null
+            LogTimeZoneBias = $null
+            mainExitCode = $null
+            Message = $null
+            MessageAlignment = $null
+            MinimizeWindows = $null
+            moduleAppDeployToolkitMain = $null
+            msiRebootDetected = $null
+            NoCountdown = $null
+            notifyIcon = $null
+            OldDisableLoggingValue = $null
+            oldPSWindowTitle = $null
+            PersistPrompt = $null
+            PhysicalScreenHeight = $null
+            PrimaryWindowsUILanguage = $null
+            ProgressRunspace = $null
+            ProgressSyncHash = $null
+            ReferencedAssemblies = $null
+            ReferredInstallName = $null
+            ReferredInstallTitle = $null
+            ReferredLogName = $null
+            regKeyAppExecution = $null
+            regKeyApplications = $null
+            regKeyDeferHistory = $null
+            regKeyLotusNotes = $null
+            RevertScriptLogging = $null
+            runningProcessDescriptions = $null
+            scriptFileName = $null
+            scriptName = $null
+            scriptParentPath = $null
+            scriptPath = $null
+            scriptRoot = $null
+            scriptSeparator = $null
+            ShowBlockedAppDialog = $null
+            ShowInstallationPrompt = $null
+            ShowInstallationRestartPrompt = $null
+            switch = $null
+            Timeout = $null
+            Title = $null
+            TopMost = $null
+            TypeDef = $null
+            UserDisplayScaleFactor = $null
+            welcomeTimer = $null
+            xmlBannerIconOptions = $null
+            xmlConfig = $null
+            xmlConfigFile = $null
+            xmlConfigMSIOptions = $null
+            xmlConfigUIOptions = $null
+            xmlLoadLocalizedUIMessages = $null
+            xmlToastOptions = $null
+            xmlToolkitOptions = $null
+            xmlUIMessageLanguage = $null
+            xmlUIMessages = $null
         }
 
         $spBinder = [System.Management.Automation.Language.StaticParameterBinder]
