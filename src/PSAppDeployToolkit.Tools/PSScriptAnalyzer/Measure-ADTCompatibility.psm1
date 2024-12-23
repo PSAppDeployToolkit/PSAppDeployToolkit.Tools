@@ -1,4 +1,4 @@
-<#
+﻿<#
     .SYNOPSIS
     PSSCriptAnalyzer rules to check for usage of legacy PSAppDeployToolkit v3 commands or variables.
     .DESCRIPTION
@@ -1876,8 +1876,8 @@ function Measure-ADTCompatibility
                     'AllowDeferCloseApps' = '-AllowDeferCloseProcesses' # Should inspect switch values here in case of -Switch:$false
                     'CloseApps' = {
                         $quoteChar = if ($boundParameters.CloseApps.Value.StringConstantType -eq 'DoubleQuoted') { '"' } else { "'" }
-                        $closeProcesses = $boundParameters.CloseApps.Value.Value.Split(',').ForEach({
-                                $name, $description = $_.Split('=')
+                        $closeProcesses = $boundParameters.CloseApps.Value.Value -split ',' | & { process {
+                                $name, $description = $_ -split '='
                                 if ($description)
                                 {
                                     "@{ Name = $quoteChar$($name)$quoteChar; Description = $quoteChar$($description)$quoteChar }"
@@ -1886,7 +1886,7 @@ function Measure-ADTCompatibility
                                 {
                                     "$quoteChar$($name)$quoteChar"
                                 }
-                            }) -join ', '
+                            }} -join ', '
                         "-CloseProcesses $closeProcesses"
                     }
                 }
