@@ -77,15 +77,15 @@ function Convert-ADTDeployment
                 {
                     $PSCmdlet.ThrowTerminatingError((New-ADTValidateScriptErrorRecord -ParameterName Path -ProvidedValue $_ -ExceptionMessage 'The specified path does not exist.'))
                 }
-                elseif ([System.IO.File]::Exists($_) -and [System.IO.Path]::GetExtension($_) -ne '.ps1')
+                elseif ((Test-Path -LiteralPath $_ -PathType Leaf) -and [System.IO.Path]::GetExtension($_) -ne '.ps1')
                 {
                     $PSCmdlet.ThrowTerminatingError((New-ADTValidateScriptErrorRecord -ParameterName Path -ProvidedValue $_ -ExceptionMessage 'The specified file is not a PowerShell script.'))
                 }
-                elseif ([System.IO.Directory]::Exists($_) -and -not [System.IO.File]::Exists([System.IO.Path]::Combine($_, 'Deploy-Application.ps1')))
+                elseif ((Test-Path -LiteralPath $_ -PathType Container) -and -not (Test-Path -LiteralPath (Join-Path -Path $_ -ChildPath 'Deploy-Application.ps1') -PathType Leaf))
                 {
                     $PSCmdlet.ThrowTerminatingError((New-ADTValidateScriptErrorRecord -ParameterName Path -ProvidedValue $_ -ExceptionMessage 'Deploy-Application.ps1 not found in the specified path.'))
                 }
-                elseif ([System.IO.Directory]::Exists($_) -and -not [System.IO.Directory]::Exists([System.IO.Path]::Combine($_, 'AppDeployToolkit')))
+                elseif ((Test-Path -LiteralPath $_ -PathType Container) -and -not (Test-Path -LiteralPath (Join-Path -Path $_ -ChildPath 'AppDeployToolkit') -PathType Container))
                 {
                     $PSCmdlet.ThrowTerminatingError((New-ADTValidateScriptErrorRecord -ParameterName Path -ProvidedValue $_ -ExceptionMessage 'AppDeployToolkit folder not found in the specified path.'))
                 }
@@ -139,6 +139,7 @@ function Convert-ADTDeployment
         {
             try
             {
+                $Path = (Resolve-Path -LiteralPath $Path).Path
                 $tempFolderName = "Convert-ADTDeployment_$([System.IO.Path]::GetRandomFileName().Replace('.', ''))"
                 $tempFolderPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), $tempFolderName)
 

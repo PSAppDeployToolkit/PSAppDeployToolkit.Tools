@@ -65,7 +65,7 @@ function Test-ADTCompatibility
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias('FullName')]
         [ValidateScript({
-                if (![System.IO.File]::Exists($_))
+                if (!(Test-Path -LiteralPath $_ -PathType Leaf))
                 {
                     $PSCmdlet.ThrowTerminatingError((New-ADTValidateScriptErrorRecord -ParameterName FilePath -ProvidedValue $_ -ExceptionMessage 'The specified file does not exist.'))
                 }
@@ -92,6 +92,8 @@ function Test-ADTCompatibility
         {
             try
             {
+                $FilePath = (Resolve-Path -LiteralPath $FilePath).Path
+
                 if ($FilePath -notmatch '(Deploy-Application\.ps1|Invoke-AppDeployToolkit\.ps1)$')
                 {
                     Write-Warning -Message "This function is designed to test PSAppDeployToolkit deployment scripts such as Deploy-Application.ps1 or Invoke-AppDeployToolkit.ps1."
