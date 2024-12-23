@@ -1,4 +1,4 @@
-﻿<#
+<#
     .SYNOPSIS
     PSSCriptAnalyzer rules to check for usage of legacy PSAppDeployToolkit v3 commands or variables.
     .DESCRIPTION
@@ -29,6 +29,7 @@ function Measure-ADTCompatibility
         #region PSAppDeployToolkit v3.10.2 Function Definitions
         function Write-FunctionHeaderOrFooter
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -45,6 +46,8 @@ function Measure-ADTCompatibility
 
         function Execute-MSP
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -57,6 +60,7 @@ function Measure-ADTCompatibility
 
         function Write-Log
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -92,20 +96,29 @@ function Measure-ADTCompatibility
                 [Parameter(Mandatory = $false, Position = 14)]
                 [Boolean]$LogDebugMessage
             )
+            process
+            {
+            }
         }
 
         function Remove-InvalidFileNameChars
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
                 [AllowEmptyString()]
                 [String]$Name
             )
+            process
+            {
+            }
         }
 
         function New-ZipFile
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding(DefaultParameterSetName = 'CreateFromDirectory')]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -127,6 +140,7 @@ function Measure-ADTCompatibility
 
         function Exit-Script
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -136,6 +150,7 @@ function Measure-ADTCompatibility
 
         function Resolve-Error
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -152,10 +167,14 @@ function Measure-ADTCompatibility
                 [Parameter(Mandatory = $false, Position = 5)]
                 [Switch]$GetErrorInnerException
             )
+            process
+            {
+            }
         }
 
         function Show-InstallationPrompt
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -189,6 +208,7 @@ function Measure-ADTCompatibility
 
         function Show-DialogBox
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -210,6 +230,7 @@ function Measure-ADTCompatibility
 
         function Get-HardwarePlatform
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -219,6 +240,7 @@ function Measure-ADTCompatibility
 
         function Get-FreeDiskSpace
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -230,6 +252,7 @@ function Measure-ADTCompatibility
 
         function Get-InstalledApplication
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -249,6 +272,8 @@ function Measure-ADTCompatibility
 
         function Execute-MSI
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -297,6 +322,8 @@ function Measure-ADTCompatibility
 
         function Remove-MSIApplications
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -330,6 +357,8 @@ function Measure-ADTCompatibility
 
         function Execute-Process
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -369,6 +398,7 @@ function Measure-ADTCompatibility
 
         function Get-MsiExitCodeMessage
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -378,6 +408,7 @@ function Measure-ADTCompatibility
 
         function Test-IsMutexAvailable
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -389,6 +420,7 @@ function Measure-ADTCompatibility
 
         function New-Folder
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -400,6 +432,7 @@ function Measure-ADTCompatibility
 
         function Remove-Folder
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -413,6 +446,7 @@ function Measure-ADTCompatibility
 
         function Copy-File
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -437,6 +471,7 @@ function Measure-ADTCompatibility
 
         function Remove-File
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, ParameterSetName = 'Path')]
@@ -452,6 +487,8 @@ function Measure-ADTCompatibility
 
         function Copy-FileToUserProfiles
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)]
@@ -479,10 +516,15 @@ function Measure-ADTCompatibility
                 [Parameter(Mandatory = $false)]
                 [Boolean]$ContinueFileCopyOnError
             )
+            process
+            {
+            }
         }
 
         function Remove-FileFromUserProfiles
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'Path')]
@@ -506,6 +548,7 @@ function Measure-ADTCompatibility
 
         function Convert-RegistryPath
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -521,6 +564,8 @@ function Measure-ADTCompatibility
 
         function Test-RegistryValue
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
                 [Parameter(Mandatory = $true, Position = 1)]
@@ -529,10 +574,14 @@ function Measure-ADTCompatibility
                 [Parameter(Mandatory = $false)]
                 [Switch]$Wow6432Node
             )
+            process
+            {
+            }
         }
 
         function Get-RegistryKey
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -554,6 +603,7 @@ function Measure-ADTCompatibility
 
         function Set-RegistryKey
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -575,6 +625,7 @@ function Measure-ADTCompatibility
 
         function Remove-RegistryKey
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -592,6 +643,8 @@ function Measure-ADTCompatibility
 
         function Invoke-HKCURegistrySettingsForAllUsers
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -603,6 +656,7 @@ function Measure-ADTCompatibility
 
         function ConvertTo-NTAccountOrSID
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, ParameterSetName = 'NTAccountToSID', ValueFromPipelineByPropertyName = $true)]
@@ -614,10 +668,15 @@ function Measure-ADTCompatibility
                 [Parameter(Mandatory = $false, ParameterSetName = 'WellKnownName')]
                 [Switch]$WellKnownToNTAccount
             )
+            process
+            {
+            }
         }
 
         function Get-UserProfiles
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -633,6 +692,7 @@ function Measure-ADTCompatibility
 
         function Get-FileVersion
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -646,6 +706,7 @@ function Measure-ADTCompatibility
 
         function New-Shortcut
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -675,6 +736,7 @@ function Measure-ADTCompatibility
 
         function Set-Shortcut
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding(DefaultParameterSetName = 'Default')]
             param (
                 [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0, ParameterSetName = 'Default')]
@@ -702,10 +764,14 @@ function Measure-ADTCompatibility
                 [Parameter(Mandatory = $false)]
                 [Boolean]$ContinueOnError
             )
+            process
+            {
+            }
         }
 
         function Get-Shortcut
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -717,6 +783,8 @@ function Measure-ADTCompatibility
 
         function Execute-ProcessAsUser
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -744,6 +812,7 @@ function Measure-ADTCompatibility
 
         function Update-Desktop
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -754,6 +823,8 @@ function Measure-ADTCompatibility
 
         function Update-SessionEnvironmentVariables
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -766,6 +837,7 @@ function Measure-ADTCompatibility
 
         function Get-SchedulerTask
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -781,6 +853,7 @@ function Measure-ADTCompatibility
 
         function Block-AppExecution
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -804,6 +877,7 @@ function Measure-ADTCompatibility
 
         function Set-DeferHistory
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -815,6 +889,7 @@ function Measure-ADTCompatibility
 
         function Get-UniversalDate
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -826,6 +901,8 @@ function Measure-ADTCompatibility
 
         function Get-RunningProcesses
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false, Position = 0)]
@@ -837,6 +914,7 @@ function Measure-ADTCompatibility
 
         function Show-InstallationWelcome
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding(DefaultParametersetName = 'None')]
             param (
                 [Parameter(Mandatory = $false)]
@@ -880,6 +958,7 @@ function Measure-ADTCompatibility
 
         function Show-WelcomePrompt
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -909,6 +988,7 @@ function Measure-ADTCompatibility
 
         function Show-InstallationRestartPrompt
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -928,6 +1008,7 @@ function Measure-ADTCompatibility
 
         function Show-BalloonTip
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -945,6 +1026,7 @@ function Measure-ADTCompatibility
 
         function Show-InstallationProgress
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -960,6 +1042,7 @@ function Measure-ADTCompatibility
 
         function Close-InstallationProgress
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -969,6 +1052,7 @@ function Measure-ADTCompatibility
 
         function Set-PinnedApplication
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -980,6 +1064,7 @@ function Measure-ADTCompatibility
 
         function Get-IniValue
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -995,6 +1080,7 @@ function Measure-ADTCompatibility
 
         function Set-IniValue
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1013,6 +1099,7 @@ function Measure-ADTCompatibility
 
         function Get-PEFileArchitecture
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -1022,10 +1109,14 @@ function Measure-ADTCompatibility
                 [Parameter(Mandatory = $false)]
                 [Switch]$PassThru
             )
+            process
+            {
+            }
         }
 
         function Invoke-RegisterOrUnregisterDLL
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1041,6 +1132,7 @@ function Measure-ADTCompatibility
 
         function Invoke-ObjectMethod
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding(DefaultParameterSetName = 'Positional')]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -1056,6 +1148,7 @@ function Measure-ADTCompatibility
 
         function Get-ObjectProperty
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -1069,6 +1162,7 @@ function Measure-ADTCompatibility
 
         function Get-MsiTableProperty
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding(DefaultParameterSetName = 'TableInfo')]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1090,6 +1184,7 @@ function Measure-ADTCompatibility
 
         function Set-MsiProperty
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1105,6 +1200,7 @@ function Measure-ADTCompatibility
 
         function New-MsiTransform
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1122,6 +1218,8 @@ function Measure-ADTCompatibility
 
         function Test-MSUpdates
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, Position = 0)]
@@ -1133,6 +1231,8 @@ function Measure-ADTCompatibility
 
         function Install-MSUpdates
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1142,6 +1242,7 @@ function Measure-ADTCompatibility
 
         function Get-WindowTitle
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, ParameterSetName = 'SearchWinTitle')]
@@ -1156,6 +1257,8 @@ function Measure-ADTCompatibility
 
         function Send-Keys
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false, Position = 0)]
@@ -1174,6 +1277,7 @@ function Measure-ADTCompatibility
 
         function Test-Battery
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -1197,6 +1301,7 @@ function Measure-ADTCompatibility
 
         function Invoke-SCCMTask
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1208,6 +1313,8 @@ function Measure-ADTCompatibility
 
         function Install-SCCMSoftwareUpdates
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -1221,6 +1328,7 @@ function Measure-ADTCompatibility
 
         function Update-GroupPolicy
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -1230,6 +1338,7 @@ function Measure-ADTCompatibility
 
         function Enable-TerminalServerInstallMode
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -1239,6 +1348,7 @@ function Measure-ADTCompatibility
 
         function Disable-TerminalServerInstallMode
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false)]
@@ -1248,6 +1358,7 @@ function Measure-ADTCompatibility
 
         function Set-ActiveSetup
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, ParameterSetName = 'Create')]
@@ -1277,6 +1388,8 @@ function Measure-ADTCompatibility
 
         function Test-ServiceExists
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1292,6 +1405,8 @@ function Measure-ADTCompatibility
 
         function Stop-ServiceAndDependencies
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1313,6 +1428,8 @@ function Measure-ADTCompatibility
 
         function Start-ServiceAndDependencies
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
@@ -1334,7 +1451,8 @@ function Measure-ADTCompatibility
 
         function Get-ServiceStartMode
         {
-            [CmdLetBinding()]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
                 [String]$Name,
@@ -1347,7 +1465,8 @@ function Measure-ADTCompatibility
 
         function Set-ServiceStartMode
         {
-            [CmdLetBinding()]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
                 [String]$Name,
@@ -1376,6 +1495,7 @@ function Measure-ADTCompatibility
 
         function Set-ItemPermission
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter( Mandatory = $true, Position = 0, ParameterSetName = 'DisableInheritance' )]
@@ -1405,6 +1525,7 @@ function Measure-ADTCompatibility
 
         function Copy-ContentToCache
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false, Position = 0)]
@@ -1414,6 +1535,7 @@ function Measure-ADTCompatibility
 
         function Remove-ContentFromCache
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $false, Position = 0)]
@@ -1423,6 +1545,8 @@ function Measure-ADTCompatibility
 
         function Configure-EdgeExtension
         {
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Rules need not apply to these dummy function definitions')]
+            [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Rules need not apply to these dummy function definitions')]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true, ParameterSetName = 'Add')]
