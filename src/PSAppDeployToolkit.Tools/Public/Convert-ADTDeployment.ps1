@@ -130,7 +130,6 @@ function Convert-ADTDeployment
         $variableReplacements = @('appVendor', 'appName', 'appVersion', 'appArch', 'appLang', 'appRevision', 'appScriptVersion', 'appScriptAuthor', 'installName', 'installTitle')
 
         $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
-        $templateScriptPath = [System.IO.Path]::Combine((Get-Module PSAppDeployToolkit).ModuleBase, 'Frontend\v4\Invoke-AppDeployToolkit.ps1')
     }
 
     process
@@ -140,6 +139,7 @@ function Convert-ADTDeployment
             try
             {
                 $Path = (Resolve-Path -LiteralPath $Path).Path
+                $Destination = (Resolve-Path -LiteralPath $Destination).Path
                 $tempFolderName = "Convert-ADTDeployment_$([System.IO.Path]::GetRandomFileName().Replace('.', ''))"
                 $tempFolderPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), $tempFolderName)
 
@@ -170,8 +170,8 @@ function Convert-ADTDeployment
                     }
 
                     # Create the temp folder
-                    Write-Verbose -Message "Creating temp folder [$tempFolderPath]"
-                    New-Item -Path $tempFolderPath -ItemType Directory -Force | Out-Null
+                    Write-Verbose -Message "Creating ADT Template in [$tempFolderPath]"
+                    New-ADTTemplate -Destination ([System.IO.Path]::GetTempPath()) -Name $tempFolderName
 
                     # Create a temp copy of the script to run ScriptAnalyzer fixes on - prefix filename with _ if it's named Invoke-AppDeployToolkit.ps1
                     $inputScriptPath = if ($Path -match '(?<=^|\\)Invoke-AppDeployToolkit.ps1$')
@@ -185,10 +185,6 @@ function Convert-ADTDeployment
 
                     Write-Verbose -Message "Creating copy of [$Path] as [$inputScriptPath]"
                     Copy-Item -LiteralPath $Path -Destination $inputScriptPath -Force
-
-                    # Copy over our template v4 script
-                    Write-Verbose -Message "Copying template script to [$tempFolderPath\Invoke-AppDeployToolkit.ps1]"
-                    $outputScriptPath = (Copy-Item -LiteralPath $templateScriptPath -Destination $tempFolderPath -Force -PassThru).FullName
                 }
                 else
                 {
@@ -226,10 +222,10 @@ function Convert-ADTDeployment
 
                     Write-Verbose -Message "Creating copy of [$Path\Deploy-Application.ps1] as [$tempFolderPath\Deploy-Application.ps1]"
                     $inputScriptPath = (Copy-Item -LiteralPath ([System.IO.Path]::Combine($Path, 'Deploy-Application.ps1')) -Destination $tempFolderPath -Force -PassThru).FullName
-
-                    # Set the path of our v4 template script
-                    $outputScriptPath = [System.IO.Path]::Combine($tempFolderPath, 'Invoke-AppDeployToolkit.ps1')
                 }
+
+                # Set the path of our v4 template script
+                $outputScriptPath = [System.IO.Path]::Combine($tempFolderPath, 'Invoke-AppDeployToolkit.ps1')
 
                 # First run the fixes on the input script to update function names and variables
                 Write-Verbose -Message "Running ScriptAnalyzer fixes on [$inputScriptPath]"
