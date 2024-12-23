@@ -1876,7 +1876,9 @@ function Measure-ADTCompatibility
                     'AllowDeferCloseApps' = '-AllowDeferCloseProcesses' # Should inspect switch values here in case of -Switch:$false
                     'CloseApps' = {
                         $quoteChar = if ($boundParameters.CloseApps.Value.StringConstantType -eq 'DoubleQuoted') { '"' } else { "'" }
-                        $closeProcesses = $boundParameters.CloseApps.Value.Value -split ',' | & { process {
+                        $closeProcesses = $boundParameters.CloseApps.Value.Value -split ',' | & {
+                            process
+                            {
                                 $name, $description = $_ -split '='
                                 if ($description)
                                 {
@@ -1886,7 +1888,8 @@ function Measure-ADTCompatibility
                                 {
                                     "$quoteChar$($name)$quoteChar"
                                 }
-                            }} -join ', '
+                            }
+                        } -join ', '
                         "-CloseProcesses $closeProcesses"
                     }
                 }
