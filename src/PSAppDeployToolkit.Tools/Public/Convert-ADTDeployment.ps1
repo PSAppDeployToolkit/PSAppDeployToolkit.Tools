@@ -273,6 +273,13 @@ function Convert-ADTDeployment
                             $end = $functionAst.Body.Extent.EndOffset
                             $scriptContent = $tempScriptAst.Extent.Text
                             $newScriptContent = ($scriptContent.Substring(0, $start) + $ifClause.Item2.Extent.Text + $scriptContent.Substring($end)).Trim()
+
+                            # Fix to make converted InstallPhase declarations from v3 match the syntax used in the v4 template
+                            $newScriptContent = $newScriptContent -replace '\[String\]\$adtSession.InstallPhase = ''(Pre-|Post-)(?:Installation|Uninstallation|Repair)''', '$adtSession.InstallPhase = "$1$($adtSession.DeploymentType)"' -replace '\[String\]\$adtSession.InstallPhase = ''(?:Installation|Uninstallation|Repair)''', '$adtSession.InstallPhase = $adtSession.DeploymentType'
+
+                            #Fix to convert MARK labels to match v4 format
+                            $newScriptContent = $newScriptContent.Replace('##* MARK: PRE-INSTALLATION', '## MARK: Pre-Install').Replace('##* MARK: INSTALLATION', '## MARK: Install').Replace('##* MARK: POST-INSTALLATION', '## MARK: Post-Install').Replace('##* MARK: PRE-UNINSTALLATION', '## MARK: Pre-Uninstall').Replace('##* MARK: UNINSTALLATION', '## MARK: Uninstall').Replace('##* MARK: POST-UNINSTALLATION', '## MARK: Post-Uninstall').Replace('##* MARK: PRE-REPAIR', '## MARK: Pre-Repair').Replace('##* MARK: REPAIR', '## MARK: Repair').Replace('##* MARK: POST-REPAIR', '## MARK: Post-Repair')
+
                             Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
                         }
                     }
