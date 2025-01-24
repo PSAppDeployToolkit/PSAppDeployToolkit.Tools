@@ -1889,7 +1889,8 @@ function Measure-ADTCompatibility
                                     "$quoteChar$($name)$quoteChar"
                                 }
                             }
-                        } -join ', '
+                        }
+                        $closeProcesses = $closeProcesses -join ', '
                         "-CloseProcesses $closeProcesses"
                     }
                 }
