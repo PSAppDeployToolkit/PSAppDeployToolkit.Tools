@@ -139,7 +139,7 @@ function Convert-ADTDeployment
             try
             {
                 $Path = (Resolve-Path -LiteralPath $Path).Path
-                $Destination = (Resolve-Path -LiteralPath $Destination).Path
+                $Destination = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Destination) # This method resolves relative paths that might not exist and also accepts PSPaths unlike [System.IO.Path]::GetFullPath()
                 $tempFolderName = "Convert-ADTDeployment_$([System.IO.Path]::GetRandomFileName().Replace('.', ''))"
                 $tempFolderPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), $tempFolderName)
 
@@ -340,6 +340,13 @@ function Convert-ADTDeployment
                 Write-Verbose -Message "Removing temp script [$inputScriptPath]"
                 Remove-Item -LiteralPath $inputScriptPath -Force
 
+                $DestinationParent = Split-Path -Path $Destination -Parent
+                if (!(Test-Path -LiteralPath $DestinationParent -PathType Container))
+                {
+                    Write-Verbose -Message "Creating parent folder [$DestinationParent]"
+                    New-Item -Path $DestinationParent -ItemType Directory -Force | Out-Null
+                }
+
                 if ($Path -like '*.ps1')
                 {
                     Write-Verbose -Message "Moving file [$outputScriptPath] to [$Destination]"
@@ -409,7 +416,7 @@ function Convert-ADTDeployment
             }
             finally
             {
-                if (Test-Path -LiteralPath $tempFolderPath)
+                if ((Get-Variable -Name 'tempFolderPath' -ErrorAction Ignore) -and (Test-Path -LiteralPath $tempFolderPath))
                 {
                     Write-Verbose -Message "Removing temp folder [$tempFolderPath]"
                     Remove-Item -Path $tempFolderPath -Recurse -Force -ErrorAction SilentlyContinue
