@@ -2573,7 +2573,7 @@ function Measure-ADTCompatibility
             }
             [System.Management.Automation.Language.Ast[]]$commandAsts = $ScriptBlockAst.FindAll($commandPredicate, $true)
 
-            # Process all hashtable definitions that splat to legacy functions first
+            # 1. Process all variable contents used by legacy functions
             foreach ($commandAst in $commandAsts)
             {
                 $functionName = $commandAst.GetCommandName()
@@ -2581,14 +2581,62 @@ function Measure-ADTCompatibility
 
                 foreach ($boundParameter in $boundParameters.GetEnumerator())
                 {
+                    # Process all variables used that require transformation
+                    $parameterName = $boundParameter.Key
+                    $variableName = $boundParameter.Value.Value.VariablePath.UserPath
+
+                    if ($variableName -and $functionMappings.$functionName.TransformParameters.$parameterName -is [ScriptBlock])
+                    {
+                        # Find the last assignment of the variable before the current command
+                        [ScriptBlock]$variableAssignmentPredicate = {
+                            param ([System.Management.Automation.Language.Ast]$Ast)
+                            $Ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $Ast.Left.Extent.Text -match "\`$$variableName$" -and ($Ast.Extent.StartLineNumber -lt $commandAst.Extent.StartLineNumber -or ($Ast.Extent.StartLineNumber -eq $commandAst.Extent.StartLineNumber -and $Ast.Extent.StartColumnNumber -lt $commandAst.Extent.StartColumnNumber))
+                        }
+                        [System.Management.Automation.Language.Ast]$variableAssignmentAst = $ScriptBlockAst.FindAll($variableAssignmentPredicate, $true) | Select-Object -Last 1
+
+                        if ($variableAssignmentAst)
+                        {
+                            $newVariableContent = ForEach-Object -InputObject $variableAssignmentAst.Right.Extent.Text -Process $functionMappings[$functionName].TransformParameters[$parameterName]
+                            $newVariableContent = $newVariableContent -replace '^-\w+\s+`?' # Remove -Parameter name + space, plus potential backtick/linebreak
+
+                            $outputMessage = "Modify variable:`n$($variableAssignmentAst.Left.Extent.Text)` = $newVariableContent"
+
+                            # Create a CorrectionExtent object for the suggested correction
+                            $objParams = @{
+                                TypeName = 'Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent'
+                                ArgumentList = @(
+                                    $variableAssignmentAst.Extent.StartLineNumber
+                                    $variableAssignmentAst.Extent.EndLineNumber
+                                    $variableAssignmentAst.Extent.StartColumnNumber
+                                    $variableAssignmentAst.Extent.EndColumnNumber
+                                    "$($variableAssignmentAst.Left.Extent.Text) = $newVariableContent"
+                                    $MyInvocation.MyCommand.Definition
+                                    'More information: https://psappdeploytoolkit.com/docs/reference/variables'
+                                )
+                            }
+                            $correctionExtent = New-Object @objParams
+                            $suggestedCorrections = New-Object System.Collections.ObjectModel.Collection[$($objParams.TypeName)]
+                            $suggestedCorrections.Add($correctionExtent) | Out-Null
+
+                            # Output the diagnostic record in the format expected by the ScriptAnalyzer
+                            [Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord]@{
+                                Message = $outputMessage
+                                Extent = $variableAssignmentAst.Extent
+                                RuleName = 'Measure-ADTCompatibility'
+                                Severity = 'Warning'
+                                RuleSuppressionID = 'ADTCompatibilitySuppression'
+                                SuggestedCorrections = $suggestedCorrections
+                            }
+                        }
+                    }
+
+                    # Process all hashtable definitions that splat to legacy functions
                     if ($boundParameter.Value.Value.Splatted)
                     {
-                        $splatVariableName = $boundParameter.Value.Value.VariablePath.UserPath
-
                         # Find the last assignment of the splat variable before the current command
                         [ScriptBlock]$splatPredicate = {
                             param ([System.Management.Automation.Language.Ast]$Ast)
-                            $Ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $Ast.Left.Extent.Text -match "\`$$splatVariableName$" -and ($Ast.Extent.StartLineNumber -lt $commandAst.Extent.StartLineNumber -or ($Ast.Extent.StartLineNumber -eq $commandAst.Extent.StartLineNumber -and $Ast.Extent.StartColumnNumber -lt $commandAst.Extent.StartColumnNumber))
+                            $Ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $Ast.Left.Extent.Text -match "\`$$variableName$" -and ($Ast.Extent.StartLineNumber -lt $commandAst.Extent.StartLineNumber -or ($Ast.Extent.StartLineNumber -eq $commandAst.Extent.StartLineNumber -and $Ast.Extent.StartColumnNumber -lt $commandAst.Extent.StartColumnNumber))
                         }
                         [System.Management.Automation.Language.Ast]$splatAst = $ScriptBlockAst.FindAll($splatPredicate, $true) | Select-Object -Last 1
 
@@ -2596,7 +2644,7 @@ function Measure-ADTCompatibility
                         {
                             $splatModified = $false
                             $outputMessage = New-Object System.Text.StringBuilder
-                            $outputMessage.AppendLine("Modify splat `$$splatVariableName`:") | Out-Null
+                            $outputMessage.AppendLine("Modify splat `$$variableName`:") | Out-Null
 
                             # Construct a hashtable in text form
                             $replacementHashText = New-Object System.Text.StringBuilder
@@ -2695,7 +2743,7 @@ function Measure-ADTCompatibility
                 }
             }
 
-            # Process all legacy variables second
+            # 2. Process all legacy variables
             foreach ($variableAst in $variableAsts)
             {
                 $variableName = $variableAst.VariablePath.UserPath
@@ -2760,7 +2808,7 @@ function Measure-ADTCompatibility
                 }
             }
 
-            # Redefine legacy functions last
+            # 3. Redefine legacy functions
             foreach ($commandAst in $commandAsts)
             {
                 $functionName = $commandAst.GetCommandName()
