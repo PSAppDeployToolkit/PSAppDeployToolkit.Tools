@@ -143,7 +143,7 @@ function Convert-ADTDeployment
 
         $variableReplacements = @('appVendor', 'appName', 'appVersion', 'appArch', 'appLang', 'appRevision', 'appScriptVersion', 'appScriptAuthor', 'installName', 'installTitle', 'appSuccessExitCodes', 'appRebootExitCodes', 'appProcessesToClose', 'requireAdmin', 'deployAppScriptFriendlyName', 'deployAppScriptVersion')
 
-                $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
+        $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
     }
 
     process
@@ -320,31 +320,31 @@ function Convert-ADTDeployment
                     # Get the text form of the hashtable definition
                     $hashtableContent = $hashtableAst.Right.Extent.Text
 
-                                                    # Copy each variable value from the input script to the hashtable
-                foreach ($variableReplacement in $variableReplacements)
-                {
-                    $assignmentAst = $inputScriptAst.Find({
-                            param ($ast)
-                            $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $ast.Left.Extent.Text -match "^(\[[^\]]+\])?\`$(adtSession\.)?$variableReplacement$"
-                        }, $true)
-
-                    if ($assignmentAst)
+                    # Copy each variable value from the input script to the hashtable
+                    foreach ($variableReplacement in $variableReplacements)
                     {
-                        Write-Verbose -Message "Updating variable [$variableReplacement]"
-                        $variableValue = $assignmentAst.Right.Extent.Text
-                        $hashtableContent = $hashtableContent -replace "(?m)(^\s*$variableReplacement\s*=)\s*'[^']*'", "`$1 $variableValue"
+                        $assignmentAst = $inputScriptAst.Find({
+                                param ($ast)
+                                $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $ast.Left.Extent.Text -match "^(\[[^\]]+\])?\`$(adtSession\.)?$variableReplacement$"
+                            }, $true)
+
+                        if ($assignmentAst)
+                        {
+                            Write-Verbose -Message "Updating variable [$variableReplacement]"
+                            $variableValue = $assignmentAst.Right.Extent.Text
+                            $hashtableContent = $hashtableContent -replace "(?m)(^\s*$variableReplacement\s*=)\s*'[^']*'", "`$1 $variableValue"
+                        }
                     }
-                }
 
                     Write-Verbose -Message 'Updating variable [appScriptDate]'
                     $hashtableContent = $hashtableContent -replace "(?m)(^\s*appScriptDate\s*=)\s*'[^']+'", "`$1 '$(Get-Date -Format "yyyy-MM-dd")'"
 
-                                                    # Update the content of the v4 template script
-                $start = $hashtableAst.Right.Extent.StartOffset
-                $end = $hashtableAst.Right.Extent.EndOffset
-                $scriptContent = $tempScriptAst.Extent.Text
-                $newScriptContent = ($scriptContent.Substring(0, $start) + $hashtableContent + $scriptContent.Substring($end)).Trim()
-                Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
+                    # Update the content of the v4 template script
+                    $start = $hashtableAst.Right.Extent.StartOffset
+                    $end = $hashtableAst.Right.Extent.EndOffset
+                    $scriptContent = $tempScriptAst.Extent.Text
+                    $newScriptContent = ($scriptContent.Substring(0, $start) + $hashtableContent + $scriptContent.Substring($end)).Trim()
+                    Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
                 }
                 else
                 {
