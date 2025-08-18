@@ -1,23 +1,105 @@
 // PSAppDeployToolkit default settings to ensure consistent code formatting and file encoding
 {
+    // Spelling Configuration
+    "cSpell.userWords": [
+        "ABORTIFHUNG",
+        "ADTMS",
+        "ADTNT",
+        "ADTPE",
+        "ADTSCCM",
+        "Appname",
+        "Aptos",
+        "bitness",
+        "bluescreen",
+        "Cascadia",
+        "CONNECTSTATE",
+        "defaultuser",
+        "DESKTOPHORZRES",
+        "DESKTOPVERTRES",
+        "DONT",
+        "ENABLEDPOPUP",
+        "expandstring",
+        "FILETIME",
+        "fullscreen",
+        "Gough",
+        "hashtable",
+        "HKCU",
+        "HKCU",
+        "HORZRES",
+        "Hotfixes",
+        "Hotfixes",
+        "HWND",
+        "HWNDFIRST",
+        "HWNDLAST",
+        "HWNDNEXT",
+        "HWNDPREV",
+        "Intune",
+        "Lillis",
+        "Listbox",
+        "logpath",
+        "lpdw",
+        "Mashwani",
+        "mmashwani",
+        "Msiexec",
+        "msimsg",
+        "Offscrub",
+        "Parameterset",
+        "Passthru",
+        "PSADT",
+        "redistributables",
+        "REINSTALLMODE",
+        "Richters",
+        "Robocopy",
+        "Runspace",
+        "SCCM",
+        "SCCM",
+        "schtasks",
+        "scriptblock",
+        "scriptblocks",
+        "scriptblocks",
+        "Segoe",
+        "SETTINGCHANGE",
+        "sintaxasn",
+        "SMTO",
+        "stubpath",
+        "Timespan",
+        "titlebar",
+        "toolkits",
+        "TRANSFORMSSECURE",
+        "unbuilt",
+        "uncentered",
+        "usecase",
+        "userbase",
+        "VERTRES",
+        "winsta",
+        "WINSTATIONINFOCLASS",
+        "WINSTATIONINFORMATIONW",
+        "wtsapi",
+        "Wusa"
+    ],
+    //-------- DotNet configuration --------
+    "dotnet.defaultSolution": "disable",
+    "dotnet.preferCSharpExtension": true,
     //-------- Indentation configuration --------
     "editor.detectIndentation": true,
     "editor.formatOnPaste": true,
     "editor.insertSpaces": false,
     "editor.tabSize": 4,
-
     //-------- Files configuration --------
+    // Tries to guess the file encoding
     "files.autoGuessEncoding": true,
+    // Sets the file encoding to UTF8 with BOM
     "files.encoding": "utf8bom",
+    // Inserts a final new line at the end of the script
     "files.insertFinalNewline": true,
-
-    // When enabled, will trim trailing whitespace when you save a file.
+    // Trims trailing whitespace when you save a file.
     "files.trimTrailingWhitespace": true,
-    // specifies the location of the explicitly ScriptAnalyzer settings file
-    "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
-    // specifies the PowerShell coding style used in this project (https://github.com/PoshCode/PowerShellPracticeAndStyle/issues/81)
-    "powershell.codeFormatting.preset": "Allman",
+    //-------- PowerShell configuration --------
     "powershell.codeFormatting.alignPropertyValuePairs": false,
+    // Specifies the PowerShell coding style used in this project (https://github.com/PoshCode/PowerShellPracticeAndStyle/issues/81)
+    "powershell.codeFormatting.preset": "Allman",
+    // Sets the default PowerShell version
     "powershell.powerShellDefaultVersion": "Windows PowerShell (x64)",
-    "dotnet.preferCSharpExtension": true
+    // Specifies the location, explicitly, of the ScriptAnalyzer settings file
+    "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1"
 }
