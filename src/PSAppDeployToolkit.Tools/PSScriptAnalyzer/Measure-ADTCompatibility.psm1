@@ -1,4 +1,4 @@
-<#
+﻿<#
     .SYNOPSIS
     PSScriptAnalyzer rules to check for usage of legacy PSAppDeployToolkit v3 commands or variables.
     .DESCRIPTION
