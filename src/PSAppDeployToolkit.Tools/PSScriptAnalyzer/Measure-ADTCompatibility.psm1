@@ -1,8 +1,8 @@
-﻿<#
+<#
     .SYNOPSIS
-    PSSCriptAnalyzer rules to check for usage of legacy PSAppDeployToolkit v3 commands or variables.
+    PSScriptAnalyzer rules to check for usage of legacy PSAppDeployToolkit v3 commands or variables.
     .DESCRIPTION
-    Can be used directly with PSSCriptAnalyzer or via Test-ADTCompatibility and Convert-ADTDeployment functions.
+    Can be used directly with PSScriptAnalyzer or via Test-ADTCompatibility and Convert-ADTDeployment functions.
     .EXAMPLE
     Measure-ADTCompatibility -ScriptBlockAst $ScriptBlockAst
     .INPUTS
@@ -1894,6 +1894,7 @@ function Measure-ADTCompatibility
                         "-CloseProcesses $closeProcesses"
                     }
                 }
+
             }
             'Get-WindowTitle' = @{
                 'NewFunction' = 'Get-ADTWindowTitle'
@@ -2552,6 +2553,46 @@ function Measure-ADTCompatibility
             xmlUIMessages = $null
         }
 
+        $configMappings = @{
+            # XML Config variables to Get-ADTConfig equivalents
+            configBalloonTextComplete = '(Get-ADTStringTable).BalloonText.Complete'
+            configBalloonTextError = '(Get-ADTStringTable).BalloonText.Error'
+            configBalloonTextFastRetry = '(Get-ADTStringTable).BalloonText.FastRetry'
+            configBalloonTextRestartRequired = '(Get-ADTStringTable).BalloonText.RestartRequired'
+            configBalloonTextStart = '(Get-ADTStringTable).BalloonText.Start'
+            configToolkitCompressLogs = '(Get-ADTConfig).Toolkit.CompressLogs'
+            configToolkitLogMaxHistory = '(Get-ADTConfig).Toolkit.LogMaxHistory'
+            configToolkitLogMaxSize = '(Get-ADTConfig).Toolkit.LogMaxSize'
+            configToolkitLogPath = '(Get-ADTConfig).Toolkit.LogPath'
+            configToolkitLogStyle = '(Get-ADTConfig).Toolkit.LogStyle'
+            configToolkitLogWriteToHost = '(Get-ADTConfig).Toolkit.LogWriteToHost'
+            configToolkitRegPath = '(Get-ADTConfig).Toolkit.RegPath'
+            configToolkitTempPath = '(Get-ADTConfig).Toolkit.TempPath'
+            configMSIInstallParams = '(Get-ADTConfig).MSI.InstallParams'
+            configMSISilentParams = '(Get-ADTConfig).MSI.SilentParams'
+            configMSIUninstallParams = '(Get-ADTConfig).MSI.UninstallParams'
+            configMSILoggingOptions = '(Get-ADTConfig).MSI.LoggingOptions'
+            configMSILogPath = '(Get-ADTConfig).MSI.LogPath'
+            configMSIMutexWaitTime = '(Get-ADTConfig).MSI.MutexWaitTime'
+            configUIDefaultTimeout = '(Get-ADTConfig).UI.DefaultTimeout'
+            configUIBalloonNotifications = '(Get-ADTConfig).UI.BalloonNotifications'
+            configUILanguageOverride = '(Get-ADTConfig).UI.LanguageOverride'
+            configUIDialogStyle = '(Get-ADTConfig).UI.DialogStyle'
+            configUIFluentAccentColor = '(Get-ADTConfig).UI.FluentAccentColor'
+            configUIPromptToSaveTimeout = '(Get-ADTConfig).UI.PromptToSaveTimeout'
+            configUIRestartPromptPersistInterval = '(Get-ADTConfig).UI.RestartPromptPersistInterval'
+            configAssetsBanner = '(Get-ADTConfig).Assets.Banner'
+            configAssetsLogo = '(Get-ADTConfig).Assets.Logo'
+            configAssetsLogoDark = '(Get-ADTConfig).Assets.LogoDark'
+            # Legacy XML config access patterns
+            xmlConfigToolkitCompressLogs = '(Get-ADTConfig).Toolkit.CompressLogs'
+            xmlConfigToolkitLogMaxHistory = '(Get-ADTConfig).Toolkit.LogMaxHistory'
+            xmlConfigToolkitLogMaxSize = '(Get-ADTConfig).Toolkit.LogMaxSize'
+            xmlConfigToolkitLogPath = '(Get-ADTConfig).Toolkit.LogPath'
+            xmlConfigMSIOptions = '$null  # XML MSI options are now in (Get-ADTConfig).MSI'
+            xmlConfigUIOptions = '$null  # XML UI options are now in (Get-ADTConfig).UI'
+        }
+
         $spBinder = [System.Management.Automation.Language.StaticParameterBinder]
     }
 
@@ -2565,6 +2606,13 @@ function Measure-ADTCompatibility
                 $Ast -is [System.Management.Automation.Language.VariableExpressionAst] -and $Ast.Parent -isnot [System.Management.Automation.Language.ParameterAst] -and $Ast.VariablePath.UserPath -in $variableMappings.Keys
             }
             [System.Management.Automation.Language.Ast[]]$variableAsts = $ScriptBlockAst.FindAll($variablePredicate, $true)
+
+            # Get legacy config variables
+            [ScriptBlock]$configPredicate = {
+                param ([System.Management.Automation.Language.Ast]$Ast)
+                $Ast -is [System.Management.Automation.Language.VariableExpressionAst] -and $Ast.Parent -isnot [System.Management.Automation.Language.ParameterAst] -and $Ast.VariablePath.UserPath -in $configMappings.Keys
+            }
+            [System.Management.Automation.Language.Ast[]]$configAsts = $ScriptBlockAst.FindAll($configPredicate, $true)
 
             # Get legacy functions
             [ScriptBlock]$commandPredicate = {
@@ -2749,6 +2797,17 @@ function Measure-ADTCompatibility
                 $variableName = $variableAst.VariablePath.UserPath
                 $newVariable = $variableMappings[$variableName]
 
+                # Special handling for DeployMode = 'Interactive' - don't suggest migration
+                if ($variableName -eq 'DeployMode' -and $variableAst.Parent -is [System.Management.Automation.Language.AssignmentStatementAst])
+                {
+                    $assignmentValue = $variableAst.Parent.Right.Extent.Text.Trim().Trim("'", '"')
+                    if ($assignmentValue -eq 'Interactive')
+                    {
+                        # Skip suggesting migration for Interactive values
+                        continue
+                    }
+                }
+
                 if ([string]::IsNullOrWhiteSpace($newVariable))
                 {
                     $outputMessage = "The variable [`$$variableName] is deprecated and no longer available."
@@ -2808,7 +2867,68 @@ function Measure-ADTCompatibility
                 }
             }
 
-            # 3. Redefine legacy functions
+            # Process all legacy config variables third
+            foreach ($configAst in $configAsts)
+            {
+                $configVariableName = $configAst.VariablePath.UserPath
+                $newConfig = $configMappings[$configVariableName]
+
+                if ([string]::IsNullOrWhiteSpace($newConfig))
+                {
+                    $outputMessage = "The config variable [`$$configVariableName] is deprecated and no longer available."
+                    $suggestedCorrections = $null
+                }
+                else
+                {
+                    if ($newConfig -match 'Get-ADTConfig')
+                    {
+                        $outputMessage = "The config variable [`$$configVariableName] is now accessed via the configuration system. Use [$newConfig] instead."
+                    }
+                    elseif ($newConfig -match 'Get-ADTStringTable')
+                    {
+                        $outputMessage = "The config variable [`$$configVariableName] is now accessed via the string table. Use [$newConfig] instead."
+                    }
+                    else
+                    {
+                        $outputMessage = "The config variable [`$$configVariableName] is deprecated. Use [$newConfig] instead."
+                    }
+
+                    if ($newConfig -like '*.*' -and $configAst.Parent.StringConstantType -in [System.Management.Automation.Language.StringConstantType]'DoubleQuoted', [System.Management.Automation.Language.StringConstantType]'DoubleQuotedHereString')
+                    {
+                        # Wrap variable in $() if it contains a . and is used in a double-quoted string
+                        $newConfig = "`$($newConfig)"
+                    }
+
+                    # Create a CorrectionExtent object for the suggested correction
+                    $objParams = @{
+                        TypeName = 'Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent'
+                        ArgumentList = @(
+                            $configAst.Extent.StartLineNumber
+                            $configAst.Extent.EndLineNumber
+                            $configAst.Extent.StartColumnNumber
+                            $configAst.Extent.EndColumnNumber
+                            $newConfig
+                            $MyInvocation.MyCommand.Definition
+                            'More information: https://psappdeploytoolkit.com/docs/reference/config-settings'
+                        )
+                    }
+                    $correctionExtent = New-Object @objParams
+                    $suggestedCorrections = New-Object System.Collections.ObjectModel.Collection[$($objParams.TypeName)]
+                    $suggestedCorrections.Add($correctionExtent) | Out-Null
+                }
+
+                # Output the diagnostic record in the format expected by the ScriptAnalyzer
+                [Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord]@{
+                    Message = $outputMessage
+                    Extent = $configAst.Extent
+                    RuleName = 'Measure-ADTCompatibility'
+                    Severity = 'Warning'
+                    RuleSuppressionID = 'ADTCompatibilitySuppression'
+                    SuggestedCorrections = $suggestedCorrections
+                }
+            }
+
+            # Redefine legacy functions last
             foreach ($commandAst in $commandAsts)
             {
                 $functionName = $commandAst.GetCommandName()

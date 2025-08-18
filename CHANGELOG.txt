@@ -1,1 +1,24 @@
-﻿
+﻿PSAppDeployToolkit.Tools Change Log
+=====================================
+
+## [0.3.0] - 2025-07-29
+
+- Added the ability to migrate v3 XML configuration settings to the v4 config.psd1
+- Updated Convert-ADTDeployment to additional $adtSession variables introduced in PSADT 4.1:
+  - appSuccessExitCodes, appRebootExitCodes, appProcessesToClose
+  - requireAdmin, deployAppScriptFriendlyName, deployAppScriptVersion
+- Added special handling of DeployMode migration
+  - If set to Interactive, the setting is not migrated.  This is so that the migrated script adopts the default DeployMode, which is now Auto
+  - All other values are migrated to $adtSession.DeployMode
+- Added special handling of Show-InstallationWelcome's -CloseApps parameter to migrate to $adtSession.appProcessesToClose
+  - Supports both simple names ("notepad,excel") and name=description pairs ("notepad=Notepad,excel=Microsoft Excel")
+  - Converts to correct hashtable format
+- Updated module manifest to require PSAppDeployToolkit 4.1.0 (previously 4.0.5)
+- Updated ImportsFirst.ps1 to use PSAppDeployToolkit 4.1.0 requirement
+
+## [0.2.3] - 2024-12-03
+
+### Initial Features
+- Convert-ADTDeployment: Convert PSAppDeployToolkit v3 scripts and packages to v4 format
+- Test-ADTCompatibility: Test v3 scripts for compatibility issues with v4
+- Custom PSScriptAnalyzer rules for PSADT compatibility checking

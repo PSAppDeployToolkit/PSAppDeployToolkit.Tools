@@ -1,7 +1,7 @@
 ﻿#
 # Module manifest for module 'PSAppDeployToolkit.Tools'
 #
-# Last modified: 2025-01-24
+# Last modified: 2025-07-29
 #
 
 @{
@@ -9,7 +9,7 @@
     RootModule = 'PSAppDeployToolkit.Tools.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.2.3'
+    ModuleVersion = '0.3.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -24,7 +24,7 @@
     CompanyName = 'PSAppDeployToolkit Team'
 
     # Copyright statement for this module
-    Copyright = 'Copyright © 2024 PSAppDeployToolkit Team. All rights reserved.'
+    Copyright = 'Copyright © 2025 PSAppDeployToolkit Team. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description = 'Enterprise App Packaging, Extended.'
@@ -39,7 +39,7 @@
     PowerShellHostVersion = '5.1.14393.0'
 
     # Minimum version of Microsoft .NET Framework required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
-    DotNetFrameworkVersion = '4.6.2.0'
+    DotNetFrameworkVersion = '4.7.2.0'
 
     # Minimum version of the common language runtime (CLR) required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
     CLRVersion = '4.0.30319.42000'
@@ -49,7 +49,7 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules = @(
-        @{ModuleName = 'PSAppDeployToolkit'; GUID = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.0.5'; }
+        @{ModuleName = 'PSAppDeployToolkit'; GUID = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.1.0'; }
         @{ModuleName = 'PSScriptAnalyzer'; GUID = 'd6245802-193d-4068-a631-8863a4342a18'; ModuleVersion = '1.23.0'; }
     )
 

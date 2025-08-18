@@ -12,6 +12,12 @@ function Convert-ADTDeployment
     .DESCRIPTION
         The variables and main code blocks are updated to the new syntax via PSScriptAnalyzer, then transferred to a fresh Invoke-AppDeployToolkit.ps1 script.
 
+        When converting a folder package, the function automatically:
+        - Converts all supported $adtSession variables including new v4.1 properties
+        - Updates function calls and variables using PSScriptAnalyzer rules (including smart CloseApps and DeployMode handling)
+        - Migrates XML config variable references to Get-ADTConfig calls via PSScriptAnalyzer rules
+        - Preserves Files and SupportFiles directories
+
     .PARAMETER Path
         Path to the Deploy-Application.ps1 file or folder to analyze. If a folder is specified, it must contain the Deploy-Application.ps1 script and the AppDeployToolkit folder.
 
@@ -51,6 +57,14 @@ function Convert-ADTDeployment
         $ConvertedPackages = Get-ChildItem -Directory | Convert-ADTDeployment -Destination C:\Temp\ConvertedPackages -Force -PassThru
 
         Get all folders in the current directory and convert them to v4 packages in C:\Temp\ConvertedPackages, overwriting existing files and storing the new package info in $ConvertedPackages.
+
+	.EXAMPLE
+        Convert-ADTDeployment -Path .\OldPackage -Verbose
+
+        Converts a v3 package folder with verbose output showing:
+        - CloseApps parameter extraction via PSScriptAnalyzer: "notepad,winword=Microsoft Word" → CloseProcesses parameter format
+        - Smart DeployMode handling: $deployMode = 'Silent' will be migrated, but 'Interactive' values are preserved
+        - Config variable migration: $configToolkitLogPath → (Get-ADTConfig).Toolkit.LogPath via PSScriptAnalyzer rules
 
     .NOTES
         An active ADT session is NOT required to use this function.
@@ -127,9 +141,9 @@ function Convert-ADTDeployment
             }
         )
 
-        $variableReplacements = @('appVendor', 'appName', 'appVersion', 'appArch', 'appLang', 'appRevision', 'appScriptVersion', 'appScriptAuthor', 'installName', 'installTitle')
+        $variableReplacements = @('appVendor', 'appName', 'appVersion', 'appArch', 'appLang', 'appRevision', 'appScriptVersion', 'appScriptAuthor', 'installName', 'installTitle', 'appSuccessExitCodes', 'appRebootExitCodes', 'appProcessesToClose', 'requireAdmin', 'deployAppScriptFriendlyName', 'deployAppScriptVersion')
 
-        $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
+                $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
     }
 
     process
@@ -306,31 +320,31 @@ function Convert-ADTDeployment
                     # Get the text form of the hashtable definition
                     $hashtableContent = $hashtableAst.Right.Extent.Text
 
-                    # Copy each variable value from the input script to the hashtable
-                    foreach ($variableReplacement in $variableReplacements)
-                    {
-                        $assignmentAst = $inputScriptAst.Find({
-                                param ($ast)
-                                $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $ast.Left.Extent.Text -match "^(\[[^\]]+\])?\`$(adtSession\.)?$variableReplacement$"
-                            }, $true)
+                                                    # Copy each variable value from the input script to the hashtable
+                foreach ($variableReplacement in $variableReplacements)
+                {
+                    $assignmentAst = $inputScriptAst.Find({
+                            param ($ast)
+                            $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $ast.Left.Extent.Text -match "^(\[[^\]]+\])?\`$(adtSession\.)?$variableReplacement$"
+                        }, $true)
 
-                        if ($assignmentAst)
-                        {
-                            Write-Verbose -Message "Updating variable [$variableReplacement]"
-                            $variableValue = $assignmentAst.Right.Extent.Text
-                            $hashtableContent = $hashtableContent -replace "(?m)(^\s*$variableReplacement\s*=)\s*'[^']*'", "`$1 $variableValue"
-                        }
+                    if ($assignmentAst)
+                    {
+                        Write-Verbose -Message "Updating variable [$variableReplacement]"
+                        $variableValue = $assignmentAst.Right.Extent.Text
+                        $hashtableContent = $hashtableContent -replace "(?m)(^\s*$variableReplacement\s*=)\s*'[^']*'", "`$1 $variableValue"
                     }
+                }
 
                     Write-Verbose -Message 'Updating variable [appScriptDate]'
                     $hashtableContent = $hashtableContent -replace "(?m)(^\s*appScriptDate\s*=)\s*'[^']+'", "`$1 '$(Get-Date -Format "yyyy-MM-dd")'"
 
-                    # Update the content of the v4 template script
-                    $start = $hashtableAst.Right.Extent.StartOffset
-                    $end = $hashtableAst.Right.Extent.EndOffset
-                    $scriptContent = $tempScriptAst.Extent.Text
-                    $newScriptContent = ($scriptContent.Substring(0, $start) + $hashtableContent + $scriptContent.Substring($end)).Trim()
-                    Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
+                                                    # Update the content of the v4 template script
+                $start = $hashtableAst.Right.Extent.StartOffset
+                $end = $hashtableAst.Right.Extent.EndOffset
+                $scriptContent = $tempScriptAst.Extent.Text
+                $newScriptContent = ($scriptContent.Substring(0, $start) + $hashtableContent + $scriptContent.Substring($end)).Trim()
+                Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
                 }
                 else
                 {
@@ -371,6 +385,8 @@ function Convert-ADTDeployment
                             Copy-Item -LiteralPath $subFolderPath -Destination $tempFolderPath -Recurse -Force
                         }
                     }
+
+
 
                     # Remove the Destination if it already exists (we should have already exited by this point if folder exists and Force not specified)
                     if (Test-Path -LiteralPath $Destination)
