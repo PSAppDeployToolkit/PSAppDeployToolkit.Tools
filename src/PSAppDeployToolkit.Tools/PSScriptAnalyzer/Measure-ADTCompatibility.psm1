@@ -26,6 +26,8 @@ function Measure-ADTCompatibility
 
     Begin
     {
+        if ($ScriptBlockAst.Parent) { return } # Only process the root ScriptBlockAst
+
         #region PSAppDeployToolkit v3.10.2 Function Definitions
         function Write-FunctionHeaderOrFooter
         {
@@ -1582,7 +1584,7 @@ function Measure-ADTCompatibility
                 )
             }
             'Exit-Script' = @{
-                'NewFunction' = 'Exit-ADTScript'
+                'NewFunction' = 'Close-ADTSession'
             }
             'Invoke-HKCURegistrySettingsForAllUsers' = @{
                 'NewFunction' = 'Invoke-ADTAllUsersRegistryAction'
@@ -1850,6 +1852,7 @@ function Measure-ADTCompatibility
                 'TransformParameters' = @{
                     'Icon' = { if ($_ -ne 'None') { "-Icon $_" } }
                     'ExitOnTimeout' = { if ($_ -eq '$false') { '-NoExitOnTimeout' } }
+                    'MinimizeWindows' = { if ($_ -eq '$true') { '-MinimizeWindows' } }
                     'TopMost' = { if ($_ -eq '$false') { '-NotTopMost' } }
                 }
             }
@@ -1866,17 +1869,23 @@ function Measure-ADTCompatibility
                     'TopMost' = { if ($_ -eq '$false') { '-NotTopMost' } }
                 }
             }
+            'Get-RunningProcesses' = @{
+                'NewFunction' = 'Get-ADTRunningProcesses'
+                'TransformParameters' = @{
+                    'DisableLogging' = '-InformationAction SilentlyContinue'
+                }
+            }
             'Show-InstallationWelcome' = @{
                 'NewFunction' = 'Show-ADTInstallationWelcome'
                 'TransformParameters' = @{
-                    'MinimizeWindows' = { if ($_ -eq '$false') { '-NoMinimizeWindows' } }
+                    'MinimizeWindows' = { if ($_ -eq '$true') { '-MinimizeWindows' } }
                     'TopMost' = { if ($_ -eq '$false') { '-NotTopMost' } }
                     'CloseAppsCountdown' = { "-CloseProcessesCountdown $_" }
                     'ForceCloseAppsCountdown' = { "-ForceCloseProcessesCountdown $_" }
                     'AllowDeferCloseApps' = '-AllowDeferCloseProcesses' # Should inspect switch values here in case of -Switch:$false
                     'CloseApps' = {
                         $quoteChar = if ($boundParameters.CloseApps.Value.StringConstantType -eq 'DoubleQuoted') { '"' } else { "'" }
-                        $closeProcesses = $_.Trim('"').Trim("'") -split ',' | & {
+                        $closeProcesses = $_.ToString().Trim('"').Trim("'") -split ',' | & {
                             process
                             {
                                 $name, $description = $_ -split '='
@@ -1900,6 +1909,9 @@ function Measure-ADTCompatibility
                 'TransformParameters' = @{
                     'DisableFunctionLogging' = '-InformationAction SilentlyContinue' # Should inspect switch values here in case of -Switch:$false
                 }
+                'RemoveParameters' = @(
+                    'GetAllWindowTitles'
+                )
             }
             'Show-InstallationRestartPrompt' = @{
                 'NewFunction' = 'Show-ADTInstallationRestartPrompt'
@@ -1919,6 +1931,9 @@ function Measure-ADTCompatibility
             }
             'Remove-ContentFromCache' = @{
                 'NewFunction' = 'Remove-ADTContentFromCache'
+                'TransformParameters' = @{
+                    'Path' = { "-LiteralPath $_" }
+                }
             }
             'Test-NetworkConnection' = @{
                 'NewFunction' = 'Test-ADTNetworkConnection'
@@ -1941,6 +1956,7 @@ function Measure-ADTCompatibility
             'New-Folder' = @{
                 'NewFunction' = 'New-ADTFolder'
                 'TransformParameters' = @{
+                    'Path' = { "-LiteralPath $_" }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
             }
@@ -1988,7 +2004,9 @@ function Measure-ADTCompatibility
                 )
             }
             'Resolve-Error' = @{
-                'NewFunction' = 'Resolve-ADTErrorRecord'
+                'NewFunction' = {
+                    if ($boundParameters.ContainsKey('ErrorRecord')) { 'Resolve-ADTErrorRecord' } else { '$Error[0] | Resolve-ADTErrorRecord' }
+                }
                 'AddParameters' = @{
                     'ExcludeErrorRecord' = {
                         if (!$boundParameters.ContainsKey('GetErrorRecord') -or $boundParameters.GetErrorRecord.ConstantValue -eq $false -or $boundParameters.GetErrorRecord.Value.Extent.Text -eq '$false') { '-ExcludeErrorRecord' }
@@ -2003,6 +2021,12 @@ function Measure-ADTCompatibility
                         if (!$boundParameters.ContainsKey('GetErrorInnerException') -or $boundParameters.GetErrorInnerException.ConstantValue -eq $false -or $boundParameters.GetErrorInnerException.Value.Extent.Text -eq '$false') { '-ExcludeErrorInnerException' }
                     }
                 }
+                'RemoveParameters' = @(
+                    'GetErrorRecord'
+                    'GetErrorInvocation'
+                    'GetErrorException'
+                    'GetErrorInnerException'
+                )
             }
             'Get-ServiceStartMode' = @{
                 'NewFunction' = 'Get-ADTServiceStartMode'
@@ -2031,6 +2055,9 @@ function Measure-ADTCompatibility
                     'Arguments' = { "-ArgumentList $_" }
                     'Parameters' = { "-ArgumentList $_" }
                     'SecureParameters' = '-SecureArgumentList' # Should inspect switch values here in case of -Switch:$false
+                    'UseShellExecute' = { if ($_ -eq '$true') { '-UseShellExecute' } }
+                    'WindowStyle' = { if (!$boundParameters.CreateNoWindow.ConstantValue) { "-WindowStyle $_" } } # Remove WindowStyle if CreateNoWindow is set
+                    'MsiExecWaitTime' = { "-MsiExecWaitTime ([System.TimeSpan]::FromSeconds($_))" }
                     'IgnoreExitCodes' = { "-IgnoreExitCodes $($_.Trim('"').Trim("'") -split ',' -join ',')" }
                     'ExitOnProcessFailure' = {
                         $ContinueOnError = if ($null -eq $boundParameters.ContinueOnError.Value.Extent) { $false } else { $boundParameters.ContinueOnError.Value.SafeGetValue() }
@@ -2071,6 +2098,7 @@ function Measure-ADTCompatibility
                 'NewFunction' = 'Start-ADTMspProcess'
                 'TransformParameters' = @{
                     'Path' = { "-FilePath $_" }
+                    'AddParameters' = { "-AdditionalArgumentList $_" }
                 }
             }
             'Block-AppExecution' = @{
@@ -2123,6 +2151,7 @@ function Measure-ADTCompatibility
             'Set-RegistryKey' = @{
                 'NewFunction' = 'Set-ADTRegistryKey'
                 'TransformParameters' = @{
+                    'Key' = { "-LiteralPath $_" }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
             }
@@ -2143,6 +2172,7 @@ function Measure-ADTCompatibility
             'Get-RegistryKey' = @{
                 'NewFunction' = 'Get-ADTRegistryKey'
                 'TransformParameters' = @{
+                    'Key' = { "-LiteralPath $_" }
                     'Value' = { "-Name $_" }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
@@ -2151,7 +2181,7 @@ function Measure-ADTCompatibility
                 'NewFunction' = 'Install-ADTMSUpdates'
             }
             'Get-SchedulerTask' = @{
-                'NewFunction' = 'Get-ADTSchedulerTask'
+                'NewFunction' = 'Get-ScheduledTask'
                 'TransformParameters' = @{
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
@@ -2195,8 +2225,9 @@ function Measure-ADTCompatibility
                 'NewFunction' = 'Set-ADTItemPermission'
                 'TransformParameters' = @{
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
-                    'File' = { "-Path $_" }
-                    'Folder' = { "-Path $_" }
+                    'File' = { "-LiteralPath $_" }
+                    'Folder' = { "-LiteralPath $_" }
+                    'Path' = { "-LiteralPath $_" }
                     'Username' = { "-User $_" }
                     'Users' = { "-User $_" }
                     'SID' = { "-User $_" }
@@ -2232,31 +2263,42 @@ function Measure-ADTCompatibility
             }
             'Send-Keys' = @{
                 'NewFunction' = 'Send-ADTKeys'
+                'TransformParameters' = @{
+                    'WaitSeconds' = { "-WaitDuration ([System.TimeSpan]::FromSeconds($_))" }
+                }
             }
             'Get-Shortcut' = @{
                 'NewFunction' = 'Get-ADTShortcut'
                 'TransformParameters' = @{
+                    'Path' = { "-LiteralPath $_" }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
             }
             'Set-Shortcut' = @{
                 'NewFunction' = 'Set-ADTShortcut'
                 'TransformParameters' = @{
+                    'Path' = { "-LiteralPath $_" }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
             }
             'New-Shortcut' = @{
                 'NewFunction' = 'New-ADTShortcut'
                 'TransformParameters' = @{
+                    'Path' = { "-LiteralPath $_" }
+                    'RunAsAdmin' = { if ($_ -eq '$true') { '-RunAsAdmin' } }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
             }
             'Execute-ProcessAsUser' = @{
                 'NewFunction' = 'Start-ADTProcessAsUser'
+                'AddParameters' = @{
+                    'NoWait' = { if (!$boundParameters.Wait.ConstantValue) { '-NoWait' } }
+                }
                 'TransformParameters' = @{
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
                 'RemoveParameters' = @(
+                    'Wait'
                     'TempPath'
                     'RunLevel'
                 )
@@ -2279,6 +2321,7 @@ function Measure-ADTCompatibility
             'Get-MsiTableProperty' = @{
                 'NewFunction' = 'Get-ADTMsiTableProperty'
                 'TransformParameters' = @{
+                    'Path' = { "-LiteralPath $_" }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
             }
@@ -2290,6 +2333,9 @@ function Measure-ADTCompatibility
             }
             'Get-MsiExitCodeMessage' = @{
                 'NewFunction' = 'Get-ADTMsiExitCodeMessage'
+                'TransformParameters' = @{
+                    'MsiErrorCode' = { "-MsiExitCode $_" }
+                }
             }
             'Get-ObjectProperty' = @{
                 'NewFunction' = 'Get-ADTObjectProperty'
@@ -2300,11 +2346,16 @@ function Measure-ADTCompatibility
             'Get-PEFileArchitecture' = @{
                 'NewFunction' = 'Get-ADTPEFileArchitecture'
                 'TransformParameters' = @{
+                    'FilePath' = { "-LiteralPath $_" }
+                    'Path' = { "-LiteralPath $_" }
                     'ContinueOnError' = { if ($_ -eq '$true') { '-ErrorAction SilentlyContinue' } else { '-ErrorAction Stop' } }
                 }
             }
             'Test-IsMutexAvailable' = @{
                 'NewFunction' = 'Test-ADTMutexAvailability'
+                'TransformParameters' = @{
+                    'MutexWaitTimeInMilliseconds' = { "-MutexWaitTime ([System.TimeSpan]::FromMilliseconds($_))" }
+                }
             }
             'New-ZipFile' = @{
                 'NewFunction' = 'New-ADTZipFile'
@@ -2915,7 +2966,11 @@ function Measure-ADTCompatibility
                             else
                             {
                                 # This is a regular parameter, e.g. -Path 'xxx'
-                                $newParam = "-$($boundParameter.Key) $($boundParameter.Value.Value.Extent.Text)"
+                                $newParam = "-$($boundParameter.Key)"
+                                if (![string]::IsNullOrWhiteSpace($boundParameter.Value.Value.Extent.Text))
+                                {
+                                    $newParam += " $($boundParameter.Value.Value.Extent.Text)"
+                                }
                             }
                         }
 
@@ -2947,7 +3002,11 @@ function Measure-ADTCompatibility
                 }
 
                 # Construct the new command
-                $newCommand = $newFunction + ' ' + ($newParams -join ' ')
+                $newCommand = $newFunction
+                if ($newParams.Count -gt 0)
+                {
+                    $newCommand = $newCommand + ' ' + ($newParams -join ' ')
+                }
 
                 # Create a CorrectionExtent object for the suggested correction
                 $objParams = @{
