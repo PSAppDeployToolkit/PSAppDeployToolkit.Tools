@@ -16,7 +16,7 @@ function Measure-ADTCompatibility
 {
     [CmdletBinding()]
     [OutputType([Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord])]
-    Param
+    param
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -24,7 +24,7 @@ function Measure-ADTCompatibility
         $ScriptBlockAst
     )
 
-    Begin
+    begin
     {
         if ($ScriptBlockAst.Parent) { return } # Only process the root ScriptBlockAst
 
@@ -848,7 +848,7 @@ function Measure-ADTCompatibility
                 [Boolean]$ContinueOnError
             )
         }
-        If (-not (Get-Command -Name 'Get-ScheduledTask' -ErrorAction 'SilentlyContinue'))
+        if (-not (Get-Command -Name 'Get-ScheduledTask' -ErrorAction 'SilentlyContinue'))
         {
             New-Alias -Name 'Get-ScheduledTask' -Value 'Get-SchedulerTask'
         }
@@ -2606,7 +2606,7 @@ function Measure-ADTCompatibility
         $spBinder = [System.Management.Automation.Language.StaticParameterBinder]
     }
 
-    Process
+    process
     {
         try
         {
