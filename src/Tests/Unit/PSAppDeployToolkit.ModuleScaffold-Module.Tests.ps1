@@ -38,7 +38,8 @@ Describe 'Module Tests' -Tag Unit {
             { [guid]::Parse($script:manifestEval.Guid) } | Should -Not -Throw
         } #guid
         It 'should not have any spaces in the tags' {
-            foreach ($tag in $script:manifestEval.Tags) {
+            foreach ($tag in $script:manifestEval.Tags)
+            {
                 $tag | Should -Not -Match '\s'
             }
         } #tagSpaces
