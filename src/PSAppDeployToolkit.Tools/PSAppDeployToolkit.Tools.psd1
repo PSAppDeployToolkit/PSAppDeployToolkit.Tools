@@ -49,8 +49,8 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules = @(
-        @{ModuleName = 'PSAppDeployToolkit'; GUID = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.0.5'; }
-        @{ModuleName = 'PSScriptAnalyzer'; GUID = 'd6245802-193d-4068-a631-8863a4342a18'; ModuleVersion = '1.23.0'; }
+        @{ModuleName = 'PSAppDeployToolkit'; GUID = '8c3c366b-8606-4576-9f2d-4051144f7ca2'; ModuleVersion = '4.1.5'; }
+        @{ModuleName = 'PSScriptAnalyzer'; GUID = 'd6245802-193d-4068-a631-8863a4342a18'; ModuleVersion = '1.24.0'; }
     )
 
     # Assemblies that must be loaded prior to importing this module
