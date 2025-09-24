@@ -11,70 +11,75 @@ $modulesToInstall = New-Object System.Collections.Generic.List[object]
 # https://github.com/PSAppDeployToolkit/PSAppDeployToolkit
 [void]$modulesToInstall.Add(([PSCustomObject]@{
             ModuleName = 'PSAppDeployToolkit'
-            ModuleVersion = '4.0.5'
+            ModuleVersion = '4.1.0'
         }))
 # https://github.com/pester/Pester
 [void]$modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'Pester'
+            ModuleName = 'Pester'
             ModuleVersion = '5.6.1'
         }))
 # https://github.com/nightroman/Invoke-Build
 [void]$modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'InvokeBuild'
+            ModuleName = 'InvokeBuild'
             ModuleVersion = '5.11.3'
         }))
 # https://github.com/PowerShell/PSScriptAnalyzer
 [void]$modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'PSScriptAnalyzer'
+            ModuleName = 'PSScriptAnalyzer'
             ModuleVersion = '1.23.0'
         }))
 # https://github.com/PowerShell/platyPS
 # older version used due to: https://github.com/PowerShell/platyPS/issues/457
 [void]$modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'platyPS'
+            ModuleName = 'platyPS'
             ModuleVersion = '0.12.0'
         }))
 # https://github.com/alt3/Docusaurus.Powershell
 # Needed for our website documentation
 [void]$modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'Alt3.Docusaurus.Powershell'
+            ModuleName = 'Alt3.Docusaurus.Powershell'
             ModuleVersion = '1.0.37'
         }))
 
 
 
 'Installing PowerShell Modules'
-foreach ($module in $modulesToInstall) {
+foreach ($module in $modulesToInstall)
+{
     $installSplat = @{
-        Name               = $module.ModuleName
-        RequiredVersion    = $module.ModuleVersion
-        Repository         = 'PSGallery'
+        Name = $module.ModuleName
+        RequiredVersion = $module.ModuleVersion
+        Repository = 'PSGallery'
         SkipPublisherCheck = $true
-        Force              = $true
-        Scope              = 'CurrentUser'
-        ErrorAction        = 'Stop'
+        Force = $true
+        Scope = 'CurrentUser'
+        ErrorAction = 'Stop'
     }
-    try {
-        if ($module.ModuleName -eq 'Pester' -and ($IsWindows -or $PSVersionTable.PSVersion -le [version]'5.1')) {
+    try
+    {
+        if ($module.ModuleName -eq 'Pester' -and ($IsWindows -or $PSVersionTable.PSVersion -le [version]'5.1'))
+        {
             # special case for Pester certificate mismatch with older Pester versions - https://github.com/pester/Pester/issues/2389
             # this only affects windows builds
             Install-Module @installSplat -SkipPublisherCheck
         }
-        elseif ($module.ModuleName -eq 'PSAppDeployToolkit' ) {
+        elseif ($module.ModuleName -eq 'PSAppDeployToolkit' )
+        {
             # special case for Pester certificate mismatch with older Pester versions - https://github.com/pester/Pester/issues/2389
             # this only affects windows builds
             Install-Module @installSplat -AllowPreRelease
         }
-        else {
+        else
+        {
             Install-Module @installSplat
         }
         Import-Module -Name $module.ModuleName -ErrorAction Stop
         '  - Successfully installed {0}' -f $module.ModuleName
     }
-    catch {
+    catch
+    {
         $message = 'Failed to install {0}' -f $module.ModuleName
         "  - $message"
         throw
     }
 }
-
