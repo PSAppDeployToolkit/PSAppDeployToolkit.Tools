@@ -11,7 +11,7 @@ $modulesToInstall = New-Object System.Collections.Generic.List[object]
 # https://github.com/PSAppDeployToolkit/PSAppDeployToolkit
 [void]$modulesToInstall.Add(([PSCustomObject]@{
             ModuleName = 'PSAppDeployToolkit'
-            ModuleVersion = '4.1.0'
+            ModuleVersion = '4.1.5'
         }))
 # https://github.com/pester/Pester
 [void]$modulesToInstall.Add(([PSCustomObject]@{
@@ -26,7 +26,7 @@ $modulesToInstall = New-Object System.Collections.Generic.List[object]
 # https://github.com/PowerShell/PSScriptAnalyzer
 [void]$modulesToInstall.Add(([PSCustomObject]@{
             ModuleName = 'PSScriptAnalyzer'
-            ModuleVersion = '1.23.0'
+            ModuleVersion = '1.24.0'
         }))
 # https://github.com/PowerShell/platyPS
 # older version used due to: https://github.com/PowerShell/platyPS/issues/457
