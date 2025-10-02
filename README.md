@@ -22,16 +22,10 @@ PSAppDeployToolkit.Tools is a companion module for [PSAppDeployToolkit](https://
 Install the module from the PowerShell Gallery:
 
 ```powershell
-Install-Module PSAppDeployToolkit.Tools -Scope CurrentUser -AllowPreRelease
+Install-Module PSAppDeployToolkit.Tools -Scope CurrentUser
 ```
 
-If this produces an error that the `-AllowPreRelease` parameter is not recognized, then first update PowerShellGet and then restart your PowerShell console:
-
-```powershell
-Install-Module PowerShellGet -Force -Scope CurrentUser
-```
-
-Alternatively you can import a downloaded copy of the module - however with this approach, you will need to ensure its pre-requisite modules **PSAppDeployToolkit** and **PSScriptAnalyzer** are available:
+Alternatively you can import a downloaded copy of the module - however with this approach, you will need to ensure its pre-requisite modules **PSAppDeployToolkit 4.1.5** and **PSScriptAnalyzer 1.24.0** are available:
 
 ```powershell
 Import-Module "<Path To PSAppDeployToolkit.Tools.psd1>"
