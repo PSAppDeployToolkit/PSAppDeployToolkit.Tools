@@ -1,6 +1,10 @@
 ﻿PSAppDeployToolkit.Tools Change Log
 =====================================
 
+## [0.3.1] - 2025-10-02
+
+- Resolve issue processing variable tied to Show-InstallationWelcome's -CloseApps parameter
+
 ## [0.3.0] - 2025-10-02
 
 - Resolved numerous conversion issues (#11, #15, #16, #17)
