@@ -132,6 +132,8 @@ function Convert-ADTDeployment
         $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
 
         $spBinder = [System.Management.Automation.Language.StaticParameterBinder]
+
+        $encoding = if ($PSVersionTable.PSVersion.Major -ge 6) { 'UTF8BOM' } else { 'UTF8' }
     }
 
     process
@@ -282,7 +284,7 @@ function Convert-ADTDeployment
                             #Fix to convert MARK labels to match v4 format
                             $newScriptContent = $newScriptContent.Replace('##* MARK: PRE-INSTALLATION', '## MARK: Pre-Install').Replace('##* MARK: INSTALLATION', '## MARK: Install').Replace('##* MARK: POST-INSTALLATION', '## MARK: Post-Install').Replace('##* MARK: PRE-UNINSTALLATION', '## MARK: Pre-Uninstall').Replace('##* MARK: UNINSTALLATION', '## MARK: Uninstall').Replace('##* MARK: POST-UNINSTALLATION', '## MARK: Post-Uninstall').Replace('##* MARK: PRE-REPAIR', '## MARK: Pre-Repair').Replace('##* MARK: REPAIR', '## MARK: Repair').Replace('##* MARK: POST-REPAIR', '## MARK: Post-Repair')
 
-                            Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
+                            Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding $encoding
                         }
                     }
                     else
@@ -358,7 +360,7 @@ function Convert-ADTDeployment
                     $end = $hashtableAst.Right.Extent.EndOffset
                     $scriptContent = $tempScriptAst.Extent.Text
                     $newScriptContent = ($scriptContent.Substring(0, $start) + $hashtableContent + $scriptContent.Substring($end)).Trim()
-                    Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding UTF8
+                    Set-Content -Path $outputScriptPath -Value $newScriptContent -Encoding $encoding
                 }
                 else
                 {
