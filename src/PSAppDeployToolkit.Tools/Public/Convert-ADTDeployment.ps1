@@ -331,10 +331,12 @@ function Convert-ADTDeployment
                             param ($ast)
                             $ast -is [System.Management.Automation.Language.CommandAst] -and $ast.GetCommandName() -eq 'Show-ADTInstallationWelcome'
                         }, $true)
-                    if ($saiwAst) {
+                    if ($saiwAst)
+                    {
                         $boundParameters = ($spBinder::BindCommand($saiwAst, $true)).BoundParameters
                         $closeProcesses = $null
-                        if ($boundParameters.TryGetValue('CloseProcesses', [ref]$closeProcesses)) {
+                        if ($boundParameters.TryGetValue('CloseProcesses', [ref]$closeProcesses))
+                        {
                             if ($closeProcesses.Value | Get-Member -Name VariablePath)
                             {
                                 $assignmentAst = $inputScriptAst.Find({
