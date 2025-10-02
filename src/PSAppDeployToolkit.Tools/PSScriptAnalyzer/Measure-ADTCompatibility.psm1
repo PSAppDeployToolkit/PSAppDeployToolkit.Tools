@@ -2636,51 +2636,6 @@ function Measure-ADTCompatibility
                     $parameterName = $boundParameter.Key
                     $variableName = $boundParameter.Value.Value.VariablePath.UserPath
 
-                    if ($variableName -and $functionMappings.$functionName.TransformParameters.$parameterName -is [ScriptBlock])
-                    {
-                        # Find the last assignment of the variable before the current command
-                        [ScriptBlock]$variableAssignmentPredicate = {
-                            param ([System.Management.Automation.Language.Ast]$Ast)
-                            $Ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $Ast.Left.Extent.Text -match "\`$$variableName$" -and ($Ast.Extent.StartLineNumber -lt $commandAst.Extent.StartLineNumber -or ($Ast.Extent.StartLineNumber -eq $commandAst.Extent.StartLineNumber -and $Ast.Extent.StartColumnNumber -lt $commandAst.Extent.StartColumnNumber))
-                        }
-                        [System.Management.Automation.Language.Ast]$variableAssignmentAst = $ScriptBlockAst.FindAll($variableAssignmentPredicate, $true) | Select-Object -Last 1
-
-                        if ($variableAssignmentAst)
-                        {
-                            $newVariableContent = ForEach-Object -InputObject $variableAssignmentAst.Right.Extent.Text -Process $functionMappings[$functionName].TransformParameters[$parameterName]
-                            $newVariableContent = $newVariableContent -replace '^-\w+\s+`?' # Remove -Parameter name + space, plus potential backtick/linebreak
-
-                            $outputMessage = "Modify variable:`n$($variableAssignmentAst.Left.Extent.Text)` = $newVariableContent"
-
-                            # Create a CorrectionExtent object for the suggested correction
-                            $objParams = @{
-                                TypeName = 'Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent'
-                                ArgumentList = @(
-                                    $variableAssignmentAst.Extent.StartLineNumber
-                                    $variableAssignmentAst.Extent.EndLineNumber
-                                    $variableAssignmentAst.Extent.StartColumnNumber
-                                    $variableAssignmentAst.Extent.EndColumnNumber
-                                    "$($variableAssignmentAst.Left.Extent.Text) = $newVariableContent"
-                                    $MyInvocation.MyCommand.Definition
-                                    'More information: https://psappdeploytoolkit.com/docs/reference/variables'
-                                )
-                            }
-                            $correctionExtent = New-Object @objParams
-                            $suggestedCorrections = New-Object System.Collections.ObjectModel.Collection[$($objParams.TypeName)]
-                            $suggestedCorrections.Add($correctionExtent) | Out-Null
-
-                            # Output the diagnostic record in the format expected by the ScriptAnalyzer
-                            [Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord]@{
-                                Message = $outputMessage
-                                Extent = $variableAssignmentAst.Extent
-                                RuleName = 'Measure-ADTCompatibility'
-                                Severity = 'Warning'
-                                RuleSuppressionID = 'ADTCompatibilitySuppression'
-                                SuggestedCorrections = $suggestedCorrections
-                            }
-                        }
-                    }
-
                     # Process all hashtable definitions that splat to legacy functions
                     if ($boundParameter.Value.Value.Splatted)
                     {
@@ -2788,6 +2743,50 @@ function Measure-ADTCompatibility
                                     RuleSuppressionID = 'ADTCompatibilitySuppression'
                                     SuggestedCorrections = $suggestedCorrections
                                 }
+                            }
+                        }
+                    }
+                    elseif ($variableName -and $functionMappings.$functionName.TransformParameters.$parameterName -is [ScriptBlock])
+                    {
+                        # Find the last assignment of the variable before the current command
+                        [ScriptBlock]$variableAssignmentPredicate = {
+                            param ([System.Management.Automation.Language.Ast]$Ast)
+                            $Ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $Ast.Left.Extent.Text -match "\`$$variableName$" -and ($Ast.Extent.StartLineNumber -lt $commandAst.Extent.StartLineNumber -or ($Ast.Extent.StartLineNumber -eq $commandAst.Extent.StartLineNumber -and $Ast.Extent.StartColumnNumber -lt $commandAst.Extent.StartColumnNumber))
+                        }
+                        [System.Management.Automation.Language.Ast]$variableAssignmentAst = $ScriptBlockAst.FindAll($variableAssignmentPredicate, $true) | Select-Object -Last 1
+
+                        if ($variableAssignmentAst)
+                        {
+                            $newVariableContent = ForEach-Object -InputObject $variableAssignmentAst.Right.Extent.Text -Process $functionMappings[$functionName].TransformParameters[$parameterName]
+                            $newVariableContent = $newVariableContent -replace '^-\w+\s+`?' # Remove -Parameter name + space, plus potential backtick/linebreak
+
+                            $outputMessage = "Modify variable:`n$($variableAssignmentAst.Left.Extent.Text)` = $newVariableContent"
+
+                            # Create a CorrectionExtent object for the suggested correction
+                            $objParams = @{
+                                TypeName = 'Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent'
+                                ArgumentList = @(
+                                    $variableAssignmentAst.Extent.StartLineNumber
+                                    $variableAssignmentAst.Extent.EndLineNumber
+                                    $variableAssignmentAst.Extent.StartColumnNumber
+                                    $variableAssignmentAst.Extent.EndColumnNumber
+                                    "$($variableAssignmentAst.Left.Extent.Text) = $newVariableContent"
+                                    $MyInvocation.MyCommand.Definition
+                                    'More information: https://psappdeploytoolkit.com/docs/reference/variables'
+                                )
+                            }
+                            $correctionExtent = New-Object @objParams
+                            $suggestedCorrections = New-Object System.Collections.ObjectModel.Collection[$($objParams.TypeName)]
+                            $suggestedCorrections.Add($correctionExtent) | Out-Null
+
+                            # Output the diagnostic record in the format expected by the ScriptAnalyzer
+                            [Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord]@{
+                                Message = $outputMessage
+                                Extent = $variableAssignmentAst.Extent
+                                RuleName = 'Measure-ADTCompatibility'
+                                Severity = 'Warning'
+                                RuleSuppressionID = 'ADTCompatibilitySuppression'
+                                SuggestedCorrections = $suggestedCorrections
                             }
                         }
                     }
@@ -2899,7 +2898,12 @@ function Measure-ADTCompatibility
                             $outputMessage.AppendLine("-$($boundParameter.Key) is deprecated.") | Out-Null
                             continue
                         }
-                        if ($boundParameter.Key -in $functionMappings[$functionName].TransformParameters.Keys)
+                        if ($boundParameter.Value.Value.Splatted)
+                        {
+                            # This is a splatted parameter, e.g. @params, retain the original value
+                            $NewParam = $boundParameter.Value.Value.Extent.Text
+                        }
+                        elseif ($boundParameter.Key -in $functionMappings[$functionName].TransformParameters.Keys)
                         {
                             if ($functionMappings[$functionName].TransformParameters[$boundParameter.Key] -is [ScriptBlock])
                             {
@@ -2952,11 +2956,6 @@ function Measure-ADTCompatibility
                             {
                                 # This is a switch bound with a value, e.g. -Switch:$true
                                 $newParam = $boundParameters.Value.Value.Parent.Extent.Text
-                            }
-                            elseif ($boundParameter.Value.Value.Splatted)
-                            {
-                                # This is a splatted parameter, e.g. @params, retain the original value
-                                $NewParam = $boundParameter.Value.Value.Extent.Text
                             }
                             elseif ($boundParameter.Key -match '^\d+$')
                             {
