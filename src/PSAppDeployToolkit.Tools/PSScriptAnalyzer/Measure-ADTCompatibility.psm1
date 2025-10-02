@@ -2624,7 +2624,72 @@ function Measure-ADTCompatibility
             }
             [System.Management.Automation.Language.Ast[]]$commandAsts = $ScriptBlockAst.FindAll($commandPredicate, $true)
 
-            # 1. Process all variable contents used by legacy functions
+            # 1. Process all legacy variables
+            foreach ($variableAst in $variableAsts)
+            {
+                $variableName = $variableAst.VariablePath.UserPath
+                $newVariable = $variableMappings[$variableName]
+
+                if ([string]::IsNullOrWhiteSpace($newVariable))
+                {
+                    $outputMessage = "The variable [`$$variableName] is deprecated and no longer available."
+                    $suggestedCorrections = $null
+                }
+                else
+                {
+                    if ($newVariable -match 'ADTSession')
+                    {
+                        $outputMessage = "The variable [`$$variableName] is now a session variable and no longer directly available. Use [$newVariable] instead."
+                    }
+                    elseif ($newVariable -match 'ADTConfig')
+                    {
+                        $outputMessage = "The variable [`$$variableName] is now a config variable and no longer directly available. Use [$newVariable] instead."
+                    }
+                    elseif ($newVariable -match 'ADTString')
+                    {
+                        $outputMessage = "The variable [`$$variableName] is now a localization string variable and no longer directly available. Use [$newVariable] instead."
+                    }
+                    else
+                    {
+                        $outputMessage = "The variable [`$$variableName] is deprecated. Use [$newVariable] instead."
+                    }
+
+                    if ($newVariable -like '*.*' -and $variableAst.Parent.StringConstantType -in [System.Management.Automation.Language.StringConstantType]'DoubleQuoted', [System.Management.Automation.Language.StringConstantType]'DoubleQuotedHereString')
+                    {
+                        # Wrap variable in $() if it is contains a . and is used in a double-quoted string
+                        $newVariable = "`$($newVariable)"
+                    }
+
+                    # Create a CorrectionExtent object for the suggested correction
+                    $objParams = @{
+                        TypeName = 'Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent'
+                        ArgumentList = @(
+                            $variableAst.Extent.StartLineNumber
+                            $variableAst.Extent.EndLineNumber
+                            $variableAst.Extent.StartColumnNumber
+                            $variableAst.Extent.EndColumnNumber
+                            $newVariable
+                            $MyInvocation.MyCommand.Definition
+                            'More information: https://psappdeploytoolkit.com/docs/reference/variables'
+                        )
+                    }
+                    $correctionExtent = New-Object @objParams
+                    $suggestedCorrections = New-Object System.Collections.ObjectModel.Collection[$($objParams.TypeName)]
+                    $suggestedCorrections.Add($correctionExtent) | Out-Null
+                }
+
+                # Output the diagnostic record in the format expected by the ScriptAnalyzer
+                [Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord]@{
+                    Message = $outputMessage
+                    Extent = $variableAst.Extent
+                    RuleName = 'Measure-ADTCompatibility'
+                    Severity = 'Warning'
+                    RuleSuppressionID = 'ADTCompatibilitySuppression'
+                    SuggestedCorrections = $suggestedCorrections
+                }
+            }
+
+            # 2. Process all variable contents used by legacy functions
             foreach ($commandAst in $commandAsts)
             {
                 $functionName = $commandAst.GetCommandName()
@@ -2790,71 +2855,6 @@ function Measure-ADTCompatibility
                             }
                         }
                     }
-                }
-            }
-
-            # 2. Process all legacy variables
-            foreach ($variableAst in $variableAsts)
-            {
-                $variableName = $variableAst.VariablePath.UserPath
-                $newVariable = $variableMappings[$variableName]
-
-                if ([string]::IsNullOrWhiteSpace($newVariable))
-                {
-                    $outputMessage = "The variable [`$$variableName] is deprecated and no longer available."
-                    $suggestedCorrections = $null
-                }
-                else
-                {
-                    if ($newVariable -match 'ADTSession')
-                    {
-                        $outputMessage = "The variable [`$$variableName] is now a session variable and no longer directly available. Use [$newVariable] instead."
-                    }
-                    elseif ($newVariable -match 'ADTConfig')
-                    {
-                        $outputMessage = "The variable [`$$variableName] is now a config variable and no longer directly available. Use [$newVariable] instead."
-                    }
-                    elseif ($newVariable -match 'ADTString')
-                    {
-                        $outputMessage = "The variable [`$$variableName] is now a localization string variable and no longer directly available. Use [$newVariable] instead."
-                    }
-                    else
-                    {
-                        $outputMessage = "The variable [`$$variableName] is deprecated. Use [$newVariable] instead."
-                    }
-
-                    if ($newVariable -like '*.*' -and $variableAst.Parent.StringConstantType -in [System.Management.Automation.Language.StringConstantType]'DoubleQuoted', [System.Management.Automation.Language.StringConstantType]'DoubleQuotedHereString')
-                    {
-                        # Wrap variable in $() if it is contains a . and is used in a double-quoted string
-                        $newVariable = "`$($newVariable)"
-                    }
-
-                    # Create a CorrectionExtent object for the suggested correction
-                    $objParams = @{
-                        TypeName = 'Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.CorrectionExtent'
-                        ArgumentList = @(
-                            $variableAst.Extent.StartLineNumber
-                            $variableAst.Extent.EndLineNumber
-                            $variableAst.Extent.StartColumnNumber
-                            $variableAst.Extent.EndColumnNumber
-                            $newVariable
-                            $MyInvocation.MyCommand.Definition
-                            'More information: https://psappdeploytoolkit.com/docs/reference/variables'
-                        )
-                    }
-                    $correctionExtent = New-Object @objParams
-                    $suggestedCorrections = New-Object System.Collections.ObjectModel.Collection[$($objParams.TypeName)]
-                    $suggestedCorrections.Add($correctionExtent) | Out-Null
-                }
-
-                # Output the diagnostic record in the format expected by the ScriptAnalyzer
-                [Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.DiagnosticRecord]@{
-                    Message = $outputMessage
-                    Extent = $variableAst.Extent
-                    RuleName = 'Measure-ADTCompatibility'
-                    Severity = 'Warning'
-                    RuleSuppressionID = 'ADTCompatibilitySuppression'
-                    SuggestedCorrections = $suggestedCorrections
                 }
             }
 
