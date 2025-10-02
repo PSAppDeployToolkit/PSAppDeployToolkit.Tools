@@ -1,7 +1,7 @@
 ﻿#
 # Module manifest for module 'PSAppDeployToolkit.Tools'
 #
-# Last modified: 2025-01-24
+# Last modified: 2025-10-02
 #
 
 @{
@@ -9,7 +9,7 @@
     RootModule = 'PSAppDeployToolkit.Tools.psm1'
 
     # Version number of this module.
-    ModuleVersion = '0.2.3'
+    ModuleVersion = '0.3.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -39,7 +39,7 @@
     PowerShellHostVersion = '5.1.14393.0'
 
     # Minimum version of Microsoft .NET Framework required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
-    DotNetFrameworkVersion = '4.6.2.0'
+    DotNetFrameworkVersion = '4.7.2.0'
 
     # Minimum version of the common language runtime (CLR) required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
     CLRVersion = '4.0.30319.42000'
@@ -98,7 +98,7 @@
         PSData = @{
 
             # Tag to indicate pre-release status
-            Prerelease = 'beta'
+            #Prerelease = ''
 
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags = 'psappdeploytoolkit', 'adt', 'psadt', 'appdeployment', 'appdeploytoolkit', 'appdeploy', 'deployment', 'toolkit'

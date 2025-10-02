@@ -1,1 +1,32 @@
-﻿
+﻿PSAppDeployToolkit.Tools Change Log
+=====================================
+
+## [0.3.0] - 2025-10-02
+
+- Resolved numerous conversion issues (#11, #15, #16, #17)
+- Added support for updating variable assignments and splats when used in function inputs (still problematic under certain conditions, see #12)
+- Added support for setting AppProcessesToClose in $adtSession hashtable definition
+- Fixed UTF8 with BOM encoding in PowerShell 6+ (#14)
+- Updated PSAppDeployToolkit required version to 4.1.5
+
+## [0.2.3] - 2025-01-24
+
+- Fix processing of CloseProcesses in Show-ADTInstallationWelcome (#6)
+- Replace text to ensure converted InstallPhase declarations and MARKS match the style of the v4 template (#7)
+
+## [0.2.2] - 2024-12-23
+
+- Support for positional parameters (resolves #2)
+- Support for relative paths
+- Resolve unhandled exception when -CloseApps $variable is used
+
+## [0.2.1] - 2024-12-16
+
+- Fixed bug in file handing when input is a script file
+- Removed deployAppScriptDate from mapped variables
+
+## [0.2.0] - 2024-12-09
+
+This initial release provides two commands:
+- Test-ADTCompatibility - Test your PSAppDeployToolkit v3 scripts to get a full report on which functions and variables have changed in v4.
+- Convert-ADTDeployment - Convert a PSAppDeployToolkit v3 script or an entire package folder to v4 standards.
