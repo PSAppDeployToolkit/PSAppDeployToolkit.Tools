@@ -130,6 +130,8 @@ function Convert-ADTDeployment
         $variableReplacements = @('appVendor', 'appName', 'appVersion', 'appArch', 'appLang', 'appRevision', 'appScriptVersion', 'appScriptAuthor', 'installName', 'installTitle')
 
         $customRulePath = [System.IO.Path]::Combine($MyInvocation.MyCommand.Module.ModuleBase, 'PSScriptAnalyzer\Measure-ADTCompatibility.psm1')
+
+        $spBinder = [System.Management.Automation.Language.StaticParameterBinder]
     }
 
     process
@@ -322,8 +324,22 @@ function Convert-ADTDeployment
                         }
                     }
 
-                    Write-Verbose -Message 'Updating variable [appScriptDate]'
-                    $hashtableContent = $hashtableContent -replace "(?m)(^\s*appScriptDate\s*=)\s*'[^']+'", "`$1 '$(Get-Date -Format "yyyy-MM-dd")'"
+                    # Update AppProcessesToClose if Show-ADTInstallationWelcome -CloseProcesses is present in the converted script
+                    $saiwAst = $tempScriptAst.Find({
+                            param ($ast)
+                            $ast -is [System.Management.Automation.Language.CommandAst] -and $ast.GetCommandName() -eq 'Show-ADTInstallationWelcome'
+                        }, $true)
+                    if ($saiwAst) {
+                        $boundParameters = ($spBinder::BindCommand($saiwAst, $true)).BoundParameters
+                        $closeProcesses = $null
+                        if ($boundParameters.TryGetValue('CloseProcesses', [ref]$closeProcesses)) {
+                            Write-Verbose -Message "Updating variable [AppProcessesToClose]"
+                            $hashtableContent = $hashtableContent -replace "(?m)(^\s*AppProcessesToClose\s*=)\s*@\(\)", "`$1 $($closeProcesses.Value.Extent.Text)"
+                        }
+                    }
+
+                    Write-Verbose -Message 'Updating variable [AppScriptDate]'
+                    $hashtableContent = $hashtableContent -replace "(?m)(^\s*AppScriptDate\s*=)\s*'[^']+'", "`$1 '$(Get-Date -Format "yyyy-MM-dd")'"
 
                     # Update the content of the v4 template script
                     $start = $hashtableAst.Right.Extent.StartOffset
