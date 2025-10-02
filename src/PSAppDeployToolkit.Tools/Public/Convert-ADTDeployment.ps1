@@ -298,7 +298,7 @@ function Convert-ADTDeployment
                 # Find the hashtable in the v4 template script that holds the adtSession splat
                 $hashtableAst = $tempScriptAst.Find({
                         param ($ast)
-                        $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and $ast.Left.VariablePath.UserPath -eq 'adtSession'
+                        $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and ($ast.Left | Get-Member -Name VariablePath) -and $ast.Left.VariablePath.UserPath -eq 'adtSession'
                     }, $true)
 
                 if ($hashtableAst)
@@ -333,8 +333,20 @@ function Convert-ADTDeployment
                         $boundParameters = ($spBinder::BindCommand($saiwAst, $true)).BoundParameters
                         $closeProcesses = $null
                         if ($boundParameters.TryGetValue('CloseProcesses', [ref]$closeProcesses)) {
+                            if ($closeProcesses.Value | Get-Member -Name VariablePath)
+                            {
+                                $assignmentAst = $inputScriptAst.Find({
+                                        param ($ast)
+                                        $ast -is [System.Management.Automation.Language.AssignmentStatementAst] -and ($ast.Left | Get-Member -Name VariablePath) -and $ast.Left.VariablePath.UserPath -eq $closeProcesses.Value.VariablePath.UserPath
+                                    }, $true)
+                                $appProcessesToClose = if ($assignmentAst) { $assignmentAst.Right.Extent.Text } else { '@()' }
+                            }
+                            else
+                            {
+                                $appProcessesToClose = $closeProcesses.Value.Extent.Text
+                            }
                             Write-Verbose -Message "Updating variable [AppProcessesToClose]"
-                            $hashtableContent = $hashtableContent -replace "(?m)(^\s*AppProcessesToClose\s*=)\s*@\(\)", "`$1 $($closeProcesses.Value.Extent.Text)"
+                            $hashtableContent = $hashtableContent -replace "(?m)(^\s*AppProcessesToClose\s*=)\s*@\(\)", "`$1 $appProcessesToClose"
                         }
                     }
 
@@ -392,7 +404,7 @@ function Convert-ADTDeployment
                     if (Test-Path -LiteralPath $Destination)
                     {
                         Write-Verbose -Message "Removing existing destination folder [$Destination]"
-                        Remove-Item -LiteralPath $Destination -Recurse -Force -ErrorAction SilentlyContinue -WhatIf
+                        Remove-Item -LiteralPath $Destination -Recurse -Force -ErrorAction SilentlyContinue
                     }
 
                     # Sometimes previous actions were leaving a lock on the temp folder, so set up a retry loop
@@ -401,18 +413,18 @@ function Convert-ADTDeployment
                         try
                         {
                             Write-Verbose -Message "Moving folder [$tempFolderPath] to [$Destination]"
+                            [System.Threading.Thread]::Sleep(500)
                             Move-Item -Path $tempFolderPath -Destination $Destination -Force -PassThru:$PassThru
                             Write-Information -MessageData "Conversion successful: $Destination"
                             break
                         }
                         catch
                         {
-                            Write-Verbose -Message "Failed to move folder. Trying again in 500ms."
-                            [System.Threading.Thread]::Sleep(500)
                             if ($i -eq 4)
                             {
                                 throw
                             }
+                            Write-Verbose -Message "Failed to move folder. Trying again in 500ms."
                         }
                     }
 

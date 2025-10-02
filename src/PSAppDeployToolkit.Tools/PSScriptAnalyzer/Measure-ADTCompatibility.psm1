@@ -1884,7 +1884,19 @@ function Measure-ADTCompatibility
                     'ForceCloseAppsCountdown' = { "-ForceCloseProcessesCountdown $_" }
                     'AllowDeferCloseApps' = '-AllowDeferCloseProcesses' # Should inspect switch values here in case of -Switch:$false
                     'CloseApps' = {
-                        $quoteChar = if ($boundParameters.CloseApps.Value.StringConstantType -eq 'DoubleQuoted') { '"' } else { "'" }
+                        if ($boundParameters.CloseApps.Value.StringConstantType -eq 'DoubleQuoted')
+                        {
+                            $quoteChar = '"'
+                        }
+                        elseif ($boundParameters.CloseApps.Value.StringConstantType -eq 'DoubleQuoted')
+                        {
+                            $quoteChar = "'"
+                        }
+                        else
+                        {
+                            # Not a string, pass through original value
+                            return "-CloseProcesses $_"
+                        }
                         $closeProcesses = $_.ToString().Trim('"').Trim("'") -split ',' | & {
                             process
                             {
